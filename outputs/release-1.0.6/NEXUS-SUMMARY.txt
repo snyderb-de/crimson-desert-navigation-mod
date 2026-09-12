@@ -1,0 +1,1 @@
+Road routes on the minimap and full map with custom colors and pulse styles. Automatic map layout detection without an exact game-version lock, improved resolution scaling, and vendor/NPC interaction fixes.

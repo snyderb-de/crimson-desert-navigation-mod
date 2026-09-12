@@ -1,0 +1,27 @@
+work/
+__pycache__/
+# Keep generated artifacts and research local; version project/release records.
+outputs/*
+!outputs/README.md
+!outputs/Development-journal.md
+!outputs/Project-requirements-and-decisions.md
+!outputs/Validation-and-milestones.md
+!outputs/release-1.0.6/
+outputs/release-1.0.6/*
+!outputs/release-1.0.6/*.md
+!outputs/release-1.0.6/*.txt
+!outputs/release-1.0.6/package/
+outputs/release-1.0.6/package/*
+!outputs/release-1.0.6/package/README.txt
+!outputs/release-1.0.6/package/CHANGELOG.md
+!outputs/release-1.0.6/package/THIRD-PARTY-NOTICES.txt
+!outputs/local-test-1.0.6/
+outputs/local-test-1.0.6/*
+!outputs/local-test-1.0.6/START-HERE.md
+!outputs/local-test-1.0.6/User-test-results.md
+*.obj
+*.pdb
+*.exe
+*.dll
+*.addon64
+*.zip

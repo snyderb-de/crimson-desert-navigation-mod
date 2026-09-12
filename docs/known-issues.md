@@ -1,0 +1,53 @@
+# Navigation TODOs
+
+Current local build (September 12, 2026): 1.0.6-test1 is installed with automatic map class detection and no exact executable version/hash lock. Regression/native host checks and detection against the current executable pass; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check. [Build and deployment](../outputs/local-test-1.0.6/START-HERE.md).
+
+Prior gameplay validation: 1.0.5-test1 introduced the full-map native UI scaling/centering correction. Four live data comparisons passed before deployment; the user now reports the 4096x2160 full-map test looks good after relaunch. [User validation](../outputs/local-test-1.0.5/User-test-results.md). Only our add-on changed; all 979 other files are hash-identical. [Scaling evidence](../outputs/local-test-1.0.5/Resolution-evidence.md), [deployment](../outputs/local-test-1.0.5/deployment-verification.json). Earlier 1.0.4 user validation covers both maps at 1440p and route persistence through vendors, enemies and NPC interactions. Minimap turn lag remains TODO-003.
+
+Release closeout: [1.0.6 upload bundle](../outputs/release-1.0.6/RELEASE-INDEX.md) supersedes the earlier 1.0.5 preparation; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check. The description treats vendor/NPC fixes as complete for the tested interactions and retains temporary combat/other-interaction route hiding as a known issue with expected automatic recovery while the active destination remains set.
+
+## TODO-001: Route disappears after an activity, during nearby NPC speech, or on enemy aggro
+
+Status: vendor/NPC interaction fixes are accepted for this release. The user clarifies that some interactions, including combat, may still temporarily hide the route; it should recover while the active navigation destination remains set. Failures to recover remain reportable. Earlier interaction validation was on 1.0.4 and the same recovery implementation is included in 1.0.5. Remaining activity/removal/replacement/arrival edge cases are not claimed universally verified and do not block this prepared upload.
+
+Required behavior, clarified by the user: the active route should end only when the user removes the active navigation destination or reaches that actual destination. The user confirmed the game itself removes the destination on arrival. NPC speech, combat, activities, and temporary reader failures must preserve navigation intent. A new active destination replaces the route. User-placed map markers and the road-snapped route endpoint are not cancellation/arrival signals.
+
+Reported triggers:
+
+- Original report: after playing for a while and completing an archery competition, reopening the map no longer showed the route.
+- Nexus downloader feedback relayed by the user on September 10, 2026: the route also disappears when nearby NPCs talk.
+- Additional Nexus downloader feedback relayed the same day: the route disappears when enemies become aggroed on the player.
+
+User clarification during investigation on September 10: the game's minimap stays visible while the route disappears, and the route can return after a while. Approximately 20-30 seconds was relayed for one person who waited; this is not a measured duration for every report. Full-screen map impact, exact versions/environments, timing relative to speech/combat ending, and recovery after archery remain unverified. Nearby NPC speech does not establish that the player entered an interactive dialogue. Whether reopening the map or setting a new active navigation destination restores the route is also unknown. These triggers are grouped under the same symptom; a shared cause is not established. User-placed map markers are distinct from the active destination.
+
+Pre-fix investigation found that failed rediscovery could discard the previous map address and force a 30-second rescan wait even after that address recovered. Offline probes demonstrated 29 seconds of unnecessary waiting; an older local log showed approximately 31-second scan intervals without incident annotations. The candidate retains addresses for fully validated retries, runs scans separately from sampling, and preserves the destination/session through read failures. The initial speech/combat/activity trigger remains unknown.
+
+The candidate compares semantic destination fields rather than whole animated icon blocks, makes distance-label data optional for map validity, and retains the last destination without an expiry timeout. A corroborated clear requires consistent empty collections/inactive label plus observed full-map removal or game-clear evidence near the actual destination. No present destination completes from proximity alone. UI identity changes and sample gaps invalidate clear evidence. These interpretations remain experimental; missed/false clears still need in-game testing. Details and limits: [1.0.3-test1 test guide](../outputs/local-test-1.0.3/START-HERE.md); [historical investigation](../outputs/TODO-001-investigation.md).
+
+Validation: final full build passed, including 7 acquisition, 29 lifecycle, 18 reader integration, 9 background discovery, 16 target-reader, 14 map-reader cases, all prior suites including 3,970 resolution checks, native host checks, and three historical capture replays. Game closed at deployment; 979 other bin64 files hash-identical. No publication. Keep TODO-001 open until the trigger, removal, and arrival checks pass in game.
+
+September 12 user validation: route stayed active during the tested vendor, enemy and NPC interactions at 2560x1440. These are positive in-game persistence results; detailed speech/aggro timing and session duration were not measured. Next: archery, explicit removal (including quick map closure), replacement and game removal on arrival, including an off-road destination. Capture reader/Display/Acquisition statuses and timestamps for any failure before restarting navigation.
+
+## TODO-003: Minimap route lags when the player turns
+
+Status: open; user-confirmed residual behavior in 1.0.4-test1 at 2560x1440. The path lags during turns and then catches up, while navigation remains active. Delay magnitude, camera-only versus player-turn behavior, frame timing and underlying cause are not measured. Related minimap drift was noted in earlier development; this report does not establish a new regression or the same root cause.
+
+Track this separately from full-map resolution scaling (TODO-002) and route disappearance (TODO-001). Next investigation should compare the displayed terrain transform and route timing during controlled turns before applying smoothing, prediction or offsets. No runtime correction is claimed for this report.
+
+Two TODOs remain open: TODO-001 for remaining destination lifecycle checks and TODO-003 for minimap turn lag. TODO-002 is resolved locally with the accepted validation scope; new display issues can be reported for follow-up.
+
+## Planned routing and appearance features
+
+The user requests routing to user-placed map markers soon, alongside pulse animation speed, pulse blur and route glow controls. Marker routing is a separate planned feature from the current active-navigation-destination route. These are not implemented or included in the 1.0.6 upload. Minimap drift tightening remains the current alignment follow-up under TODO-003. No delivery date is promised.
+
+## Resolved: TODO-002: Full-screen map route misalignment at other resolutions
+
+Status: resolved locally in 1.0.5-test1 on September 12, 2026, for the validated setup. The user accepts the completed resolution testing and wants other display configurations handled through bug reports. The 4096x2160 full-map test is user-validated after relaunch; earlier 1440p operation was user-validated on 1.0.4. Four live data comparisons and the synthetic resolution checks pass. Untested display layouts and the earlier Linux report are not claimed verified; further reports can reopen this issue with reproducible evidence. [Evidence](../outputs/local-test-1.0.5/Resolution-evidence.md).
+
+Original report: the route did not align with roads on the full-screen map at these resolutions. The user clarified on September 10 that the earlier Linux line artifact belongs to this resolution issue; it is consolidated here, not tracked as a separate Linux bug.
+
+Code inspection found that the full-map projection discarded its own canvas dimensions and the renderer applied the minimap canvas dimensions to both maps. Full-map drawing also required valid minimap clipping geometry. Synthetic mismatched-canvas tests reproduce incorrect 4K positions. Historical captures only establish matching 1920x1080 canvases. On September 12, a user-confirmed 2560x1440 session on game build 2850 exposed a 2560x1440 minimap canvas and a 1920x1080 full-map canvas. This directly confirms the cross-map mismatch in live data. After installing the compatible candidate, the user reported the test worked well and both maps work. This supports the correction at 1440p; it does not establish 4K success or perfect minimap alignment during turns.
+
+The candidate carries each map's own canvas through its independent projection, converts to ReShade display coordinates once, and re-reads the full-map canvas/anchor/identity to reject changing snapshots. No resolution presets or graphics-setting extraction are required. Regression coverage includes a 480..4320-height sweep, different logical canvas sizes, native 4:3/16:10/ultrawide layouts, pan/zoom, resolution switches and minimap rotation. These are synthetic math checks, not verified in-game resolution support. The initial aspect guard incorrectly suppressed a valid centered reference at 4096x2160. Candidate 1.0.5 reads the native UI scale and actual body before applying that guard, validating the 128-pixel horizontal offset in this session. Physical-body/display mismatches still suppress changing layouts.
+
+The user accepts the positive 4096x2160 visual result and four passing live data comparisons as sufficient to finish this resolution task. Additional configuration testing is not a closure requirement. Investigate further display issues when reported, using the resolution, overlay dimensions, game/add-on version and reproduction details. This acceptance decision does not turn untested configurations into verified support. [Recorded scope](../outputs/local-test-1.0.5/User-test-results.md).

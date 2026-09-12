@@ -1,0 +1,13 @@
+# Crimson Navigation 1.0.6 - September 12, 2026
+
+- Corrected full-map scaling and centering at the reported 1440p/4K resolutions, including 4096x2160.
+- Fixed the reported route loss during tested vendor and NPC interactions.
+- Retained the active destination through temporary reader interruptions and improved automatic recovery.
+- Removed the executable SHA/version allowlist. Detect all four required map class identities from the current executable at startup; retain live structural checks. Compatible patches can work without a mod update, while changed or unreadable layouts are reported.
+- Includes solid, pulse, dashed and dotted minimap styles, with saved color/width/opacity settings.
+
+Known issues: some resolutions/display layouts may still need fixes. Combat and other interactions can temporarily hide the route; it should return while the active navigation destination remains set. Report cases that do not recover. Minimap drift/turn lag is still being tightened.
+
+Upcoming, not included: routing to user-placed map markers, pulse animation speed, pulse blur and route glow controls.
+
+Internal version: 1.0.6-test1. Automatic detection matches the independently recorded map addresses in installed executable 1.0.0.2850. Regression and native host checks pass. The earlier route/scaling gameplay validation used 1.0.4/1.0.5; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check. Existing appearance settings are preserved.
