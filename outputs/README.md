@@ -1,8 +1,12 @@
 # Crimson Desert navigation mod — project documentation
 
-Last updated: September 12, 2026.
+Last updated: September 18, 2026.
 
 Source-control scope: core project records, current release text and 1.0.6 user-validation notes are versioned. Generated packages, binaries, screenshots, research/dependency caches and raw evidence artifacts remain local; links to those artifacts require the development workspace.
+
+Current compatibility result: [game patch 2.03.00 review](Update-2.03.00-compatibility-review.md). The 1.0.6 archive failure and the patch's separate 16-byte full-map projection shift are confirmed locally on Steam build 25381195 / executable 1.0.0.2944. [Version 1.0.7-test2](local-test-1.0.7/START-HERE.md) adds bounded structural discovery for that moved projection block. Its complete regression build, untouched archive probe, 10/10 read-only live full-map/display projection samples, deployment checks, and installed gameplay validation pass. The user confirmed the minimap, full-screen map, full-map pan/zoom, and ReShade health.
+
+[Release 1.0.7](release-1.0.7/RELEASE-INDEX.md) is prepared for the user's manual upload. The final four-file ZIP is SHA256 `E649C6B9C1614A56B8EF09160E9118E4E4103B24075B9BC66E2BADEC9FC13857`; no Nexus upload or page edit was performed.
 
 Latest bundle: [1.0.6 release bundle](release-1.0.6/RELEASE-INDEX.md) removes the exact executable version/hash lock and supersedes the 1.0.5 preparation. The updated description lists tested game versions as history. Full regression/native host checks and automatic detection against the installed game executable pass. The user confirms normal startup and visible routes on both maps with 1.0.6-test1; the game log also confirms startup, automatic discovery and route submissions. The bundle is ready for manual upload. The user will upload it; no public page change or upload has been performed.
 
@@ -86,7 +90,7 @@ Latest local test: [1.0.1 dashed and dotted minimap styles](local-test-1.0.1/STA
 
 Planning only; no runtime changes, build, deployment or publication. Final approach and gentle arrival feedback remain pinned backlog items.
 
-Current bug tracker: [three open TODOs](../docs/known-issues.md): TODO-001 remaining lifecycle checks; TODO-002 remaining resolutions; TODO-003 minimap turn lag. The 1440p session and vendor/enemy/NPC persistence have positive user validation.
+Current bug tracker: [three open TODOs](../docs/known-issues.md): TODO-001 remaining lifecycle checks, TODO-003 minimap turn lag, and TODO-004 patch 2.03.00 startup compatibility. TODO-002 resolution scaling is resolved for its accepted validation scope. The 1440p session and vendor/enemy/NPC persistence have positive user validation.
 
 Latest installed local candidate: [1.0.4-test1](local-test-1.0.4/START-HERE.md). [User test results](local-test-1.0.4/User-test-results.md) confirm 1440p operation and persistence through vendor, enemy and NPC interactions, with minimap turn lag remaining.
 

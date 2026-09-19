@@ -1,0 +1,1 @@
+﻿PASS: rejected host, 3 init/uninit cycles, native unload. GUI and game compatibility untested.

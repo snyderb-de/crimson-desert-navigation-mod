@@ -6,6 +6,16 @@ Prior gameplay validation: 1.0.5-test1 introduced the full-map native UI scaling
 
 Release closeout: [1.0.6 upload bundle](../outputs/release-1.0.6/RELEASE-INDEX.md) supersedes the earlier 1.0.5 preparation; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check. The description treats vendor/NPC fixes as complete for the tested interactions and retains temporary combat/other-interaction route hiding as a known issue with expected automatic recovery while the active destination remains set.
 
+## TODO-004: Game patch 2.03.00 compatibility report
+
+Status: resolved in 1.0.7-test2 and verified in game. A Nexus user reported that game patch 2.03.00 broke mod version 1.0.6. The user then reproduced the failure locally on Steam build 25381195 / executable 1.0.0.2944: with an active navigation destination, no route appeared and ReShade reported `Reader stopped after an internal error.`
+
+Read-only static inspection rules out the former version-lock failure: automatic RTTI detection succeeds against the new executable and resolves one identity for each required map class at new RVAs. The failure occurs earlier than live map discovery. The updated `0008/1.paz` retains format version 46 and begins with `worldmaproad`, but its top-level count changed from 3 to 4. The loader requires exactly 3 and throws `Unexpected road layer`; `ReaderService` converts that exception into the generic internal-error status.
+
+A workspace-only copy changing that one count from 4 to 3 let the unchanged loader read 43,655 nodes and 46,338 segments and calculate a valid route, confirming the startup root cause. Version 1.0.7 replaces the exact total-count equality with a bounded 3..64 count while retaining the required format, `worldmaproad` identity, all record/bounds checks, and the `wagon` boundary. Tests cover legacy 3, observed 4, additive 5, out-of-range counts, and the wrong layer identity.
+
+Installed 1.0.7-test1 then launched without a reader error, acquired the active navigation destination, calculated a route, and displayed it on the minimap. The full-screen map remained blank. Live inspection showed its object identity, visibility and layout were valid, but patch 2.03 moved the paired reference-canvas and cursor/world transform from offsets `+0xA58/+0xA78` to `+0xA68/+0xA88`. Version 1.0.7-test2 finds exactly one structurally valid pair inside a narrow bounded window and rejects missing, ambiguous, unstable, or implausible candidates. The full build and untouched archive probe pass; 10/10 read-only live samples validate both raw full-map and 1920x1080 display projection. The user then confirmed test2 works on the minimap and full-screen map, including full-map pan/zoom, with no ReShade error. [Candidate](../outputs/local-test-1.0.7/START-HERE.md), [investigation](../outputs/Update-2.03.00-compatibility-review.md).
+
 ## TODO-001: Route disappears after an activity, during nearby NPC speech, or on enemy aggro
 
 Status: vendor/NPC interaction fixes are accepted for this release. The user clarifies that some interactions, including combat, may still temporarily hide the route; it should recover while the active navigation destination remains set. Failures to recover remain reportable. Earlier interaction validation was on 1.0.4 and the same recovery implementation is included in 1.0.5. Remaining activity/removal/replacement/arrival edge cases are not claimed universally verified and do not block this prepared upload.
@@ -34,7 +44,7 @@ Status: open; user-confirmed residual behavior in 1.0.4-test1 at 2560x1440. The 
 
 Track this separately from full-map resolution scaling (TODO-002) and route disappearance (TODO-001). Next investigation should compare the displayed terrain transform and route timing during controlled turns before applying smoothing, prediction or offsets. No runtime correction is claimed for this report.
 
-Two TODOs remain open: TODO-001 for remaining destination lifecycle checks and TODO-003 for minimap turn lag. TODO-002 is resolved locally with the accepted validation scope; new display issues can be reported for follow-up.
+Three TODOs remain open: TODO-001 for remaining destination lifecycle checks, TODO-003 for minimap turn lag, and TODO-004 for the confirmed patch 2.03.00 startup incompatibility. TODO-002 is resolved locally with the accepted validation scope; new display issues can be reported for follow-up.
 
 ## Planned routing and appearance features
 

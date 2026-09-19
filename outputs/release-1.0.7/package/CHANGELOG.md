@@ -1,0 +1,12 @@
+# Crimson Navigation 1.0.7 - September 18, 2026
+
+- Fixed the patch 2.03.00 startup failure caused by an added top-level road-archive section.
+- Treat the archive section total as bounded metadata instead of an exact build identity. Added sections no longer block loading when the required `worldmaproad` data and every structural check remain valid.
+- Locate the full-map canvas/transform pair by bounded structural validation after patch 2.03 shifted that block by 16 bytes.
+- Retain automatic executable map-class detection, destination recovery, full-map resolution scaling and all route appearance options from 1.0.6.
+
+Known issues: some resolutions/display layouts may still need fixes. Combat and other interactions can temporarily hide the route; it should return while the active navigation destination remains set. Report cases that do not recover. Minimap drift/turn lag is still being tightened.
+
+Upcoming, not included: routing to user-placed map markers, pulse animation speed, pulse blur and route glow controls.
+
+Internal version: 1.0.7-test2. Regression and native host checks pass. The production loader reads the untouched patch 2.03.00 archive, and read-only live probes validate the moved full-map projection. The installed test2 passes the minimap, full-screen map, full-map pan/zoom, and ReShade-health checks. Existing appearance settings are preserved.

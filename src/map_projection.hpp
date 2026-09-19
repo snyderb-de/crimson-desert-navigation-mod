@@ -47,16 +47,32 @@ template<class Memory> MapProjection read_worldmap_projection(Memory &m,std::uin
     if(!root||!m.read(root,&vt,8)||vt!=base+build.worldmap_root||!m.read(root+8,&body,8)||
        !m.read(body+0x38,&parent,8)||!m.read(parent+0xb0,&flags,1)||(flags&0x40)==0)return {};
     float canvas[2]{},anchor[5]{},again[5]{},canvas_again[2]{};
-    if(!m.read(root+0xa58,canvas,sizeof(canvas))||!m.read(root+0xa78,anchor,sizeof(anchor)))return {};
-    for(float f:canvas)if(!std::isfinite(f)||f<=0||f>32768)return {};
-    for(float f:anchor)if(!std::isfinite(f))return {};
-    // This is a centered reference canvas, not the visible body's bounds.
-    // Wider bodies legitimately store negative / beyond-reference cursor values.
-    if(std::abs(anchor[0])>32768||std::abs(anchor[1])>32768||
-       std::abs(anchor[2])>100000||std::abs(anchor[3])>100000||anchor[4]<.01||anchor[4]>1000)return {};
+    std::size_t block_offset{};unsigned matches=0;
+    // This small block moved by 0x10 in patch 2.03. Locate it by its paired
+    // canvas and cursor/world transform instead of treating its old offset as
+    // a game-build identity. Ambiguous or implausible memory remains rejected.
+    for(std::size_t offset=0xa40;offset<=0xac0;offset+=4){
+        float candidate_canvas[2]{},candidate_anchor[5]{};
+        if(!m.read(root+offset,candidate_canvas,sizeof(candidate_canvas))||
+           !m.read(root+offset+0x20,candidate_anchor,sizeof(candidate_anchor)))continue;
+        bool valid=true;
+        for(float f:candidate_canvas)if(!std::isfinite(f)||f<=8||f>32768)valid=false;
+        for(float f:candidate_anchor)if(!std::isfinite(f))valid=false;
+        // This is a centered reference canvas, not the visible body's bounds.
+        // Wider bodies legitimately store negative / beyond-reference cursor values.
+        if(std::abs(candidate_anchor[0])>32768||std::abs(candidate_anchor[1])>32768||
+           std::abs(candidate_anchor[2])>100000||std::abs(candidate_anchor[3])>100000||
+           candidate_anchor[4]<.01||candidate_anchor[4]>1000)valid=false;
+        if(valid){
+            ++matches;block_offset=offset;
+            std::memcpy(canvas,candidate_canvas,sizeof(canvas));
+            std::memcpy(anchor,candidate_anchor,sizeof(anchor));
+        }
+    }
+    if(matches!=1)return {};
     std::uintptr_t link{};unsigned char flags_again{};
-    if(!m.read(root+0xa58,canvas_again,sizeof(canvas_again))||std::memcmp(canvas,canvas_again,sizeof(canvas))||
-       !m.read(root+0xa78,again,sizeof(again))||std::memcmp(anchor,again,sizeof(anchor))||
+    if(!m.read(root+block_offset,canvas_again,sizeof(canvas_again))||std::memcmp(canvas,canvas_again,sizeof(canvas))||
+       !m.read(root+block_offset+0x20,again,sizeof(again))||std::memcmp(anchor,again,sizeof(anchor))||
        !m.read(root,&link,8)||link!=vt||!m.read(root+8,&link,8)||link!=body||
        !m.read(body+0x38,&link,8)||link!=parent||!m.read(parent+0xb0,&flags_again,1)||flags_again!=flags)return {};
     const double scale=1./anchor[4];

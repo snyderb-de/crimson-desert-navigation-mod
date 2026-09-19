@@ -34,7 +34,7 @@ void save_settings() noexcept {
 }
 void settings_panel(reshade::api::effect_runtime *) {
     std::lock_guard<std::mutex> lock(state_mutex);
-    ImGui::TextUnformatted("Crimson Navigation 1.0.6-test1");
+    ImGui::TextUnformatted("Crimson Navigation 1.0.7-test2");
     ImGui::TextWrapped("Experimental road navigation on both maps. Off-road destinations end at the nearest road point. Conditional road transitions are excluded.");
     ImGui::Checkbox("Start navigation automatically",&settings.auto_start);
     if(ImGui::Button("Start / restart navigation")){startup_pending=false;reader.start();}
@@ -180,7 +180,7 @@ void draw_route(reshade::api::effect_runtime *) {
 
 }
 extern "C" __declspec(dllexport) const char *NAME="Crimson Navigation Lab";
-extern "C" __declspec(dllexport) const char *DESCRIPTION="Road navigation 1.0.6-test1. Automatic map layout detection; no executable version lock.";
+extern "C" __declspec(dllexport) const char *DESCRIPTION="Road navigation 1.0.7-test2. Patch 2.03 archive and full-map projection compatibility; automatic layout detection.";
 extern "C" __declspec(dllexport) bool AddonInit(HMODULE module,HMODULE host) {
     try {
         wchar_t filename[32768]; const DWORD count=GetModuleFileNameW(module,filename,32768);
@@ -195,7 +195,7 @@ extern "C" __declspec(dllexport) bool AddonInit(HMODULE module,HMODULE host) {
     startup_pending=true;
     reshade::register_overlay(nullptr,settings_panel);
     reshade::register_event<reshade::addon_event::reshade_overlay>(draw_route);
-    reshade::log::message(reshade::log::level::info,"Crimson Navigation Lab 1.0.6-test1 loaded: automatic map layout detection; no executable hash allowlist.");
+    reshade::log::message(reshade::log::level::info,"Crimson Navigation Lab 1.0.7-test2 loaded: patch 2.03 archive and full-map projection compatibility; automatic layout detection.");
     return true;
 }
 extern "C" __declspec(dllexport) void AddonUninit(HMODULE module,HMODULE) {

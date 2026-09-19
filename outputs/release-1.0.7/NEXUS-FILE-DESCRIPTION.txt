@@ -1,0 +1,3 @@
+Crimson Navigation 1.0.7 - restores compatibility with game patch 2.03.00, tolerates bounded additive road-archive sections, and locates the shifted full-map projection block through structural validation. Includes automatic map layout detection, full-map scaling, destination recovery and custom route appearance. Some resolutions may still have issues; minimap drift improvements remain ongoing.
+
+Requires ReShade with full add-on support. Close the game and replace only CrimsonNavigationLab.addon64 in bin64. Preserve existing settings. Internal version: 1.0.7-test2. Automated, patch 2.03 archive, live projection, minimap, full-screen map, full-map pan/zoom, and ReShade-health checks pass.

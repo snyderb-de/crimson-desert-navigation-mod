@@ -23,6 +23,32 @@ int main(){
  anchor[4]=1;anchor[0]=32769;m.put(root+0xa78,anchor);assert(!crimson_nav::read_worldmap_projection(m,0,root).valid);
  anchor[0]=2000;m.put(root+0xa78,anchor);assert(crimson_nav::read_worldmap_projection(m,0,root).valid);
  canvas[0]=2560;m.put(root+0xa58,canvas);assert(crimson_nav::read_worldmap_projection(m,0,root).valid);
+ // Patch 2.03 inserted fields before the full-map projection block. Locate the
+ // structurally validated canvas/anchor pair instead of binding to one build's
+ // exact member offsets.
+ Memory shifted;shifted.put(root,std::uintptr_t(89508976));
+ shifted.put(root+8,body);shifted.put(body+0x38,parent);shifted.put(parent+0xb0,(unsigned char)0x40);
+ const float repurposed_canvas[2]={-10139.9f,-6028.83f};
+ const float repurposed_anchor[5]={0,0,0,0,960};
+ const float shifted_canvas[2]={1920,1080};
+ const float shifted_anchor[5]={960,540,-10139.9f,-6028.83f,1.47744f};
+ shifted.put(root+0xa58,repurposed_canvas);shifted.put(root+0xa78,repurposed_anchor);
+ shifted.put(root+0xa68,shifted_canvas);shifted.put(root+0xa88,shifted_anchor);
+ const auto patch203=crimson_nav::read_worldmap_projection(shifted,0,root);
+ if(!patch203.valid||std::abs(patch203.ax-1./shifted_anchor[4])>.000001||
+    patch203.canvas_width!=1920||patch203.canvas_height!=1080){
+     std::cerr<<"FAIL: shifted patch 2.03 full-map projection block\n";return 1;
+ }
+ Memory later=shifted;const float no_canvas[2]={0,0},later_canvas[2]={1280,720};
+ const float later_anchor[5]={640,360,-500,-750,2};
+ later.put(root+0xa68,no_canvas);later.put(root+0xab0,later_canvas);later.put(root+0xad0,later_anchor);
+ if(!crimson_nav::read_worldmap_projection(later,0,root).valid){
+     std::cerr<<"FAIL: bounded additive full-map projection shift\n";return 1;
+ }
+ Memory ambiguous=shifted;ambiguous.put(root+0xab0,later_canvas);ambiguous.put(root+0xad0,later_anchor);
+ if(crimson_nav::read_worldmap_projection(ambiguous,0,root).valid){
+     std::cerr<<"FAIL: ambiguous full-map projection blocks must be rejected\n";return 1;
+ }
  constexpr std::uintptr_t icon=0x30000,matrix=0x31000;
  m.put(root+0x398,icon);m.put(icon+0x50,matrix);
  float identity[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};m.put(matrix,identity);

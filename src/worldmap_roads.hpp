@@ -21,7 +21,8 @@ inline RoadGraph load_worldmap_roads(const std::filesystem::path &game) {
     auto count=[&](std::uint32_t max){auto n=u();if(n>max)throw std::runtime_error("Invalid road count");return n;};
     auto text=[&](){auto n=count(64);size_t start=p;skip(n);return std::string(reinterpret_cast<char*>(bytes.data()+start),n);};
     if(u()!=46)throw std::runtime_error("Unsupported road version");skip(16);
-    if(u()!=3||text()!="worldmaproad")throw std::runtime_error("Unexpected road layer");
+    const auto layers=u();
+    if(layers<3||layers>64||text()!="worldmaproad")throw std::runtime_error("Unexpected road layer");
     auto links=count(100000);
     for(std::uint32_t i=0;i<links;++i){u();for(int j=0;j<2;++j){auto n=count(10000);skip(size_t(n)*4);}skip(1);}
     struct Chain {std::vector<std::uint32_t> ids;bool conditional;};

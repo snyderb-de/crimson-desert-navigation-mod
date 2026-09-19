@@ -397,3 +397,58 @@ Removed pending-check wording from the replacement description, README, changelo
 The user authorizes committing all project changes, initializing a repository if needed. Inspection found an existing repository on main with no commits. The initial commit includes the independent runtime source, regression tests and probes, build command, dependency notices, known-issue tracker, core project records and current 1.0.6 release/user-validation documentation. Refined the broad outputs ignore rule to keep those maintained documents in version control. Generated binaries/ZIPs, screenshots, extracted game data, caches, dependency checkouts and raw research/build outputs remain local and ignored. Referenced local evidence artifacts are not part of a source checkout.
 
 No runtime implementation changed for this repository operation. The previously completed full regression/native host checks and current 1.0.6 user startup/both-map pass remain the applicable validation. This is a local commit only; no remote is configured, and no push or publication is requested.
+
+
+## September 18, 2026 - patch 2.03.00 triage, runtime validation pending
+
+Confirmed the official Steam release, the public Nexus report, and the local executable update to Steam build 25381195 / 1.0.0.2944. Read-only detection finds all four required map RTTI identities at new RVAs. A fresh full build passes all offline regressions and native host checks. The optional installed-executable detector assertion still names and expects build 2850, so its one failure against 2944 is a test-fixture mismatch after successful detection.
+
+No post-update game session is available: the latest ReShade log predates the executable replacement. Consequently, add-on startup, unique live map discovery, active-navigation-destination reading, projection validity, route submission, and visible routes on 2.03.00 remain unverified. Milestone status is investigation open; no fix candidate, deployment, release package, or public response exists. [Detailed review](Update-2.03.00-compatibility-review.md).
+
+
+### Patch 2.03.00 failure and root cause confirmed
+
+Live reproduction on Steam build 25381195 confirms no route with an active navigation destination and the ReShade status `Reader stopped after an internal error.` The log proves the add-on loads and stops before map discovery. The standalone loader returns `Unexpected road layer` because the updated archive's top-level count is 4 and version 1.0.6 requires exactly 3.
+
+A workspace-only copy with that single header value restored to 3 passes the unchanged loader: 43,655 nodes, 46,338 segments, and a valid 189-point route. Root-cause milestone reached. A corrected binary, installation, and post-fix minimap/full-map validation remain pending; current 1.0.6 is confirmed incompatible with patch 2.03.00.
+
+
+## September 18, 2026 - 1.0.7-test1 built and deployed, gameplay pending
+
+TDD evidence: observed count 4 failed before the fix and passed after; additive count 5 then failed under exact handling and passed after bounded 3..64 metadata handling. Legacy count 3 passes; counts 2 and 65 and a wrong first-section identity are rejected. Full regression/native host build passes, and the freshly compiled production loader parses the untouched patch 2.03 archive and calculates a valid probe route.
+
+Installed candidate hash `84497AF09507B23DC2D6E66BF1D9451ECC088C54F6D77E27F16BA9E7FC1F7CBD` after confirming the game was closed and the previous file was verified 1.0.6-test1. Workspace backup retained; all 979 other `bin64` files unchanged during deployment. Required remaining milestone: normal startup without reader error and visible route on the minimap and full-screen map with an active navigation destination. No Nexus upload or page edit.
+
+
+## September 18, 2026 - test1 partial gameplay pass; test2 live projection pass
+
+Installed 1.0.7-test1: normal startup without a reader internal error passes; automatic discovery and active-navigation-destination acquisition pass; route calculation passes; the user confirms the minimap route works. The user confirms the full-screen map route fails.
+
+Root cause: patch 2.03 shifted the full-map reference-canvas/cursor-world pair by 16 bytes while retaining valid object identity, visibility and layout. The new shifted-block regression fails before the correction and passes after bounded structural discovery is added. Full test2 regression/native host build passes. Untouched archive parsing remains 43,655 nodes and 46,338 segments.
+
+Current-game read-only evidence: 20/20 raw/display projection diagnostics pass, and the production ReaderCore probe reports 10/10 valid map, destination, full projection, minimap projection and 1920x1080 display projection samples. Test2 candidate SHA256 F619FBF800EA479CDFAF40825B731EE2386C8AD8F81FBEAED19294198ED2EEAC. Remaining milestone: close the game, replace only the verified test1 add-on, relaunch, and obtain a user-visible minimap/full-screen route result including full-map pan and zoom. No release or publication claim yet.
+
+
+Final test2 rebuild note: after adding explicit bounded-shift and ambiguous-candidate regression cases, the complete build passed again. The final staged binary SHA256 is BC5FB52B86966358C950E7BB8DF2B8DF017E7FF80C2189EADFB7D228C3AE35D8 and supersedes the intermediate F619FBF800EA479CDFAF40825B731EE2386C8AD8F81FBEAED19294198ED2EEAC candidate. The running game still has test1 loaded; no installation change occurred.
+
+
+### 1.0.7-test2 deployment
+
+After the user confirmed Crimson Desert was closed, verified that no game process remained and that the installed add-on exactly matched test1 SHA256 84497AF09507B23DC2D6E66BF1D9451ECC088C54F6D77E27F16BA9E7FC1F7CBD. Backed that file up in the workspace, then replaced only CrimsonNavigationLab.addon64 with test2. Installed and candidate SHA256 match BC5FB52B86966358C950E7BB8DF2B8DF017E7FF80C2189EADFB7D228C3AE35D8. A normalized before/after inventory confirms all 979 other bin64 files retain the same path, size, and modification time. Deployment verification is recorded in local-test-1.0.7/deployment-verification-test2.json. Relaunched both-map gameplay remains pending; no publication.
+
+
+### 1.0.7-test2 gameplay acceptance
+
+The user reports the requested four-part result: minimap ok, full-screen map good, full-map pan/zoom good, and ReShade status good. The saved test2 log corroborates add-on startup, unique minimap/full-map discovery, active route calculation, and repeated full-map route submissions with no reader internal-error line. This passes the patch 2.03 acceptance gate on the current 1920x1080 Windows setup. It does not add Linux/Proton or universal-display claims.
+
+The exact installed, staged, and package binary remains SHA256 BC5FB52B86966358C950E7BB8DF2B8DF017E7FF80C2189EADFB7D228C3AE35D8. Release documentation is updated to the final observed behavior. Prepare the four-file 1.0.7 archive and verification records; do not upload or edit Nexus without user authorization.
+
+
+### 1.0.7 release bundle finalized
+
+Prepared Crimson-Navigation-1.0.7.zip from the exact in-game-tested test2 binary. The archive contains only CrimsonNavigationLab.addon64, README.txt, CHANGELOG.md, and THIRD-PARTY-NOTICES.txt. Final ZIP SHA256 E649C6B9C1614A56B8EF09160E9118E4E4103B24075B9BC66E2BADEC9FC13857; size 236930 bytes. CRC, four-file allowlist, staging equality, x64 PE, AddonInit/AddonUninit exports, no BCrypt import, complete ReShade/ImGui notices, no settings or game assets, balanced BBCode, seven unchanged historical gallery images, exact tested binary, host lifecycle, and runtime-log checks pass. Fresh policy and license review is recorded. No Nexus upload or page edit.
+
+
+### GitHub README and image preparation
+
+At the user's request, prepared the repository for a visual GitHub presentation before committing. Added tracked stable copies of the approved 1920x1080 promotional header and representative full-map, minimap pulse, and ReShade-menu captures under docs/images. Rewrote the main README around version 1.0.7 with the header, gameplay gallery, current compatibility explanation, installation, development, limitations, and licensing. The header is explicitly labeled as AI-edited promotional artwork based on an official Pearl Abyss screenshot; gameplay images are explicitly labeled as unchanged user-supplied 1.0.0 captures, not patch 2.03 validation images. Source URLs and exact hashes are recorded in docs/images/README.md.

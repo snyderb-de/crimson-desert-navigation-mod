@@ -1,41 +1,89 @@
+<p align="center">
+  <img src="docs/images/crimson-navigation-header.png" alt="Crimson Navigation promotional illustration" width="100%">
+</p>
+
 # Crimson Navigation
 
-Road navigation for Crimson Desert through a native ReShade add-on. Routes appear on the minimap and full-screen map. Includes solid and traveling-pulse minimap styles, saved color and width, a player-following route start, and automatic destination routing.
+Road navigation for **Crimson Desert** through a native ReShade add-on. Set an active navigation destination and the mod draws a road-following route on the minimap and full-screen map, with custom color, width, and minimap styles.
 
-[Download and installation on Nexus Mods](https://www.nexusmods.com/crimsondesert/mods/3447).
+**Current version:** 1.0.7 (`1.0.7-test2` internally)<br>
+**Runtime requirement:** Windows x64 and [ReShade](https://reshade.me/) with full add-on support<br>
+**Download:** [Nexus Mods](https://www.nexusmods.com/crimsondesert/mods/3447)<br>
+**Release record:** [1.0.7 notes and verification](outputs/release-1.0.7/RELEASE-INDEX.md)
 
-## Compatibility
+> The header is an AI-edited promotional illustration based on an official Pearl Abyss screenshot. The highlighted world-space line illustrates the concept; the actual add-on draws routes on the game maps.
 
-The prepared 1.0.6 update has no exact executable version/hash lock. It locates the current map class identities automatically and retains live map-data validation. Compatible game patches can work without a mod update; changes to required game structures may still need one. Windows x64 and ReShade with full add-on support are required. Linux/Proton remains unverified.
+## In game
 
-Test history: prior route/scaling gameplay validation used executable 1.0.0.2850 / Steam build 25246367 with ReShade 6.8.0.2155. The new detector matches the independently recorded addresses in that executable and passes synthetic changed-address checks. Full regression/native host checks pass; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check.
+| Full-screen map route | Traveling-pulse minimap route |
+|---|---|
+| ![Road route on the full-screen map](docs/images/full-map-route.png) | ![Traveling-pulse route on the minimap](docs/images/minimap-pulse.png) |
 
-Routes minimize geometric road length, not measured travel time. Off-road destination endpoints remain on the road. Dashed player-to-road connectors are directional guides and do not check obstacles. Minor minimap drift and overlapping-road ambiguity remain possible.
+<p align="center">
+  <img src="docs/images/reshade-addon-menu.png" alt="Crimson Navigation controls in the ReShade add-on menu" width="663">
+</p>
 
-## Prepared update
+These are genuine user gameplay captures from version 1.0.0 and illustrate the route presentation. The menu image shows that older version and saved custom settings. Current 1.0.7 behavior was separately verified on patch 2.03.00. See [image sources and use](docs/images/README.md).
 
-[1.0.6 upload bundle](outputs/release-1.0.6/RELEASE-INDEX.md) and [updated Nexus description](outputs/release-1.0.6/NEXUS-DESCRIPTION.md) supersede the earlier 1.0.5 preparation; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check; the public page has not been changed by this preparation.
+## Features
 
-Reported vendor/NPC interaction bugs and full-map resolution scaling are fixed in the tested setup. Some resolutions may still have issues. Combat and other interactions may briefly hide the route; it should return while the active navigation destination remains set. Please report failures to recover.
+- Road routes to the active navigation destination on the minimap and full-screen map.
+- Solid, traveling-pulse, dashed, and dotted minimap styles; solid full-map routes.
+- Saved route color, opacity, width, and style settings.
+- Moving route start and recalculation after sustained deviation.
+- Directional player-to-road guide for off-road starts.
+- Automatic executable map-class detection without an exact version/hash allowlist.
+- Fail-closed validation for map identity, projection data, destinations, and road records.
 
-Minimap drift tightening remains ongoing. Routing to user-placed map markers, pulse animation speed, pulse blur and route glow controls are planned, not included in this release.
+Routes minimize geometric road distance rather than measured travel time. Conditional road connections are excluded, and off-road destination endpoints stop at the nearest road point. The directional connector does not test terrain obstacles or move the character automatically.
+
+## Patch 2.03 compatibility
+
+Game patch 2.03.00 exposed two brittle assumptions in version 1.0.6: the road archive gained a fourth top-level section, and the full-map projection block moved by 16 bytes. Version 1.0.7 replaces both exact-build assumptions with bounded structural validation:
+
+- The archive loader accepts bounded additive sections only while the required `worldmaproad` identity and every consumed record/boundary check remain valid.
+- The full-map reader finds exactly one plausible paired canvas/transform block inside a narrow validated object window, then re-reads the data and object identity before drawing.
+
+The complete regression suite, untouched patch 2.03 archive probe, read-only live probes, deployment checks, and installed gameplay validation pass. The user confirmed the minimap, full-screen map, full-map pan/zoom, and ReShade health on Steam build 25381195 / executable 1.0.0.2944. Details are in the [patch 2.03 compatibility review](outputs/Update-2.03.00-compatibility-review.md).
+
+Small additive executable or archive changes should no longer require a new exact offset or count. Semantic changes to required game data can still need a mod update and are rejected rather than interpreted speculatively.
+
+## Install or update
+
+1. Install ReShade with full add-on support separately.
+2. Close Crimson Desert.
+3. Copy **only** `CrimsonNavigationLab.addon64` into `Crimson Desert/bin64`, beside `CrimsonDesert.exe`.
+4. When updating, replace only this mod's positively identified same-named add-on. Keep `CrimsonNavigationLab/settings.txt`.
+5. Launch the game, load gameplay, and use the game's **Set Destination** action. User-placed map markers are distinct and do not select the active navigation destination.
+6. Open **Home → Add-ons → Crimson Navigation Lab** to adjust or save appearance settings.
+
+No installer is included. Do not replace original game files, saves, Steam configuration, ReShade files/configuration, or other mods.
 
 ## Development
 
-Source is in `src/`; regression tests and research probes are in `tests/`. ReShade is the only runtime dependency. No game archives or extracted map assets are included. Installed data is read locally without patching original game files.
+Source is under [`src/`](src/) and regression tests and read-only research probes are under [`tests/`](tests/). ReShade is the only runtime dependency; local build and research tools are development-only. No game archives, extracted map data, ReShade distribution, or other authors' mod content are included.
 
-The current `build.cmd` is a Windows developer build using Visual Studio 2026 Build Tools at its standard installation path. It expects the ReShade SDK headers in `work/reference/reshade/include` and matching Dear ImGui headers in `work/reference/reshade/deps/imgui` (API 20 / ImGui 1.92.5). Obtain SDK dependencies separately from their official repositories. A portable dependency setup is not included yet.
+`build.cmd` uses the Windows Visual Studio 2026 Build Tools installation and expects separately obtained ReShade SDK headers at `work/reference/reshade/include` with matching Dear ImGui headers under `work/reference/reshade/deps/imgui` (API 20 / ImGui 1.92.5).
 
-Run `cmd /c build.cmd` from a configured Windows development environment. It builds and runs regression and host checks, then writes the current 1.0.6-test1 add-on under `outputs/local-test-1.0.6/build/`. This candidate reads the full map's native UI scale and body extent to center routes at wider resolutions, including 4096x2160. It detects map class addresses from the current executable without a version/hash allowlist and retains destination recovery. It does not deploy to the game. Offline tests do not establish in-game or Proton compatibility; destination-clear detection still needs live validation.
+```powershell
+cmd /c build.cmd
+```
 
-## Bug reports
+The command runs the regression and native-host checks and writes the development add-on under `outputs/local-test-1.0.7/build/`. The verified 1.0.7 release archive is recorded under [`outputs/release-1.0.7/`](outputs/release-1.0.7/RELEASE-INDEX.md); generated binaries and ZIP files remain local and are excluded from source control.
 
-Include the mod/game/ReShade versions, OS and Proton/Wine version if applicable, resolution, UI scale, graphics API/translation layer, route style, and screenshots. Describe whether the issue changes while panning, zooming, moving, or clearing the destination. Share only relevant log excerpts after removing private details.
+## Known limitations and reports
 
-See `docs/known-issues.md` for reports awaiting investigation.
+- Minor minimap drift or turn lag can remain visible.
+- Overlapping or disconnected road data can produce ambiguous or unavailable routes.
+- Combat and other interactions can temporarily hide the route; it should return while the active navigation destination remains set.
+- Linux/Proton remains unverified.
 
-## Credits and licensing
+When reporting a problem, include the mod, game, and ReShade versions; OS or Proton/Wine version; resolution and UI scale; route style; whether the issue changes during pan, zoom, movement, or destination clearing; and a screenshot or relevant sanitized log excerpt. See [known issues](docs/known-issues.md).
 
-Developed with OpenAI Codex and iterative user-directed testing. Substantial code and documentation were AI-generated.
+## Credits, images, and licensing
 
-ReShade and Dear ImGui retain their respective licenses; see `THIRD-PARTY-NOTICES.txt`. No project-wide open-source license has been selected. Public source visibility, if enabled, does not by itself grant a redistribution license. Unofficial fan project, not endorsed by Pearl Abyss.
+Developed with OpenAI Codex and iterative user-directed testing. Substantial code and documentation were AI-generated. Crimson Route was research context only; none of its files are included or required.
+
+ReShade and Dear ImGui retain their respective licenses; see [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt). No project-wide open-source license has been selected, so public source visibility does not itself grant redistribution rights.
+
+Header source: official Pearl Abyss promotional screenshot, modified with an AI-edited gold route highlight and used under the recorded fan-content policy review. Gameplay images were supplied by the user. This is unofficial fan content and is not endorsed by Pearl Abyss.

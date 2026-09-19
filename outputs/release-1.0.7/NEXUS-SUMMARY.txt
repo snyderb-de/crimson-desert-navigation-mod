@@ -1,0 +1,1 @@
+Road routes on the minimap and full map with custom colors and pulse styles. Version 1.0.7 restores patch 2.03.00 compatibility and handles bounded additive archive sections.
