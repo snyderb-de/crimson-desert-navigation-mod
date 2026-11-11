@@ -7,6 +7,7 @@
 namespace crimson_nav {
 struct ReaderView {
     GameBuild build=game_build_2760;
+    const MinimapLayout *layout=&minimap_layout_legacy;
     MapState state{};TargetState target{};DestinationView navigation{};
     MinimapGeometry geometry{};MapProjection mini_projection{},world_projection{};
     std::shared_ptr<const RoadRoute> route;
@@ -22,12 +23,12 @@ class ReaderCore {
     std::shared_ptr<const RoadRoute> route;
     std::uintptr_t last_world_root{},last_world_body{},last_world_parent{};
     struct WorldIdentity {std::uintptr_t root{},body{},parent{};};
-    template<class Memory>WorldIdentity read_world_identity(Memory &m,std::uintptr_t base)const{
+    template<class Memory>WorldIdentity read_world_identity(Memory &m,std::uintptr_t base,const MinimapLayout &layout)const{
         std::uintptr_t vt{},body{},parent{},again{};std::uint8_t flags{};
         const bool valid=roots.world_root&&m.read(roots.world_root,&vt,8)&&vt==base+build.worldmap_root&&
             m.read(roots.world_root+8,&body,8)&&body>=0x10000&&body<0x7fffffff0000ull-0x40&&
-            m.read(body+0x38,&parent,8)&&parent>=0x10000&&parent<0x7fffffff0000ull-0xb1&&
-            m.read(parent+0xb0,&flags,1)&&m.read(body+0x38,&again,8)&&again==parent&&
+            m.read(body+0x38,&parent,8)&&parent>=0x10000&&parent<0x7fffffff0000ull-(layout.ui_flags+1)&&
+            m.read(parent+layout.ui_flags,&flags,1)&&m.read(body+0x38,&again,8)&&again==parent&&
             m.read(roots.world_root,&again,8)&&again==vt&&
             m.read(roots.world_root+8,&again,8)&&again==body;
         return valid?WorldIdentity{roots.world_root,body,parent}:WorldIdentity{};
@@ -41,16 +42,18 @@ public:
     }
     template<class Memory>ReaderView sample(Memory &memory,std::uintptr_t base,const RoadGraph &roads,std::uint64_t now){
         ReaderView view;view.build=build;view.root=roots.root;view.world_root=roots.world_root;view.sampled_at=now;
-        view.valid=read_map(memory,base,roots.root,view.state,build);
+        const auto *layout=select_minimap_layout(memory,base,roots.root,build);
+        if(layout)view.layout=layout;
+        view.valid=layout&&read_map(memory,base,roots.root,view.state,build,*layout);
         if(!view.valid){
             view.navigation=destination.update({}, {},false,false,now);view.route=route;
             view.status="Map state temporarily unavailable. Destination retained; retrying.";return view;
         }
-        view.target=read_target(memory,base,roots.root,build);
-        view.geometry=read_minimap_geometry(memory,base,roots.root,build);
-        view.mini_projection=read_minimap_projection(memory,roots.root,view.state,view.geometry);
-        view.world_projection=read_worldmap_projection(memory,base,roots.world_root,build);
-        const auto identity=read_world_identity(memory,base);
+        view.target=read_target(memory,base,roots.root,build,*layout);
+        view.geometry=read_minimap_geometry(memory,base,roots.root,build,*layout);
+        view.mini_projection=read_minimap_projection(memory,roots.root,view.state,view.geometry,*layout);
+        view.world_projection=read_worldmap_projection(memory,base,roots.world_root,build,*layout);
+        const auto identity=read_world_identity(memory,base,*layout);
         view.world_missing=view.state.map_hidden_candidate&&!identity.root;
         const auto &world=view.world_projection;
         if(identity.root!=last_world_root||identity.body!=last_world_body||identity.parent!=last_world_parent)

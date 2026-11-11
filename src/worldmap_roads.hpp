@@ -1,5 +1,7 @@
 #pragma once
 #include "road_route.hpp"
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <string>
@@ -8,11 +10,21 @@
 #include <fstream>
 #include <filesystem>
 namespace crimson_nav {
-// Supported build's uncompressed fielddefault.road begins at archive offset zero.
-// Reads original data in place. No extracted asset/cache is shipped or written.
+// Uncompressed fielddefault.road begins at archive offset zero. Reads original
+// data in place. No extracted asset/cache is shipped or written. The prefix limit
+// is a resource bound; the parser below must still find every required section.
+inline constexpr std::size_t max_road_prefix=16u*1024*1024;
+// Format versions 46 (through patch 2.03) and 47 (patch 2.04) share this record
+// layout and are verified. A later version is attempted, and reported as
+// unverified, only because every count, bound, coordinate,
+// node identity, endpoint and the wagon section boundary must still validate.
+inline constexpr std::uint32_t min_road_version=46,max_road_version=255,max_verified_road_version=47;
 inline RoadGraph load_worldmap_roads(const std::filesystem::path &game) {
-    std::ifstream input(game/"0008"/"1.paz",std::ios::binary);
-    std::vector<unsigned char> bytes(3207193);input.read(reinterpret_cast<char*>(bytes.data()),bytes.size());
+    std::ifstream input(game/"0008"/"1.paz",std::ios::binary|std::ios::ate);
+    if(!input)throw std::runtime_error("Road archive unavailable");
+    const auto end=input.tellg();if(end<=0)throw std::runtime_error("Road archive unavailable");
+    std::vector<unsigned char> bytes((std::min)(static_cast<std::size_t>(end),max_road_prefix));
+    input.seekg(0);input.read(reinterpret_cast<char*>(bytes.data()),static_cast<std::streamsize>(bytes.size()));
     if(!input)throw std::runtime_error("Road archive unavailable");
     size_t p=0;
     auto skip=[&](size_t n){if(n>bytes.size()-p)throw std::runtime_error("Invalid road bounds");p+=n;};
@@ -20,7 +32,9 @@ inline RoadGraph load_worldmap_roads(const std::filesystem::path &game) {
     auto number=[&](){auto bits=u();float f;std::memcpy(&f,&bits,4);if(!std::isfinite(f))throw std::runtime_error("Invalid road coordinate");return f;};
     auto count=[&](std::uint32_t max){auto n=u();if(n>max)throw std::runtime_error("Invalid road count");return n;};
     auto text=[&](){auto n=count(64);size_t start=p;skip(n);return std::string(reinterpret_cast<char*>(bytes.data()+start),n);};
-    if(u()!=46)throw std::runtime_error("Unsupported road version");skip(16);
+    const auto version=u();
+    if(version<min_road_version||version>max_road_version)throw std::runtime_error("Unsupported road version "+std::to_string(version));
+    skip(16);
     const auto layers=u();
     if(layers<3||layers>64||text()!="worldmaproad")throw std::runtime_error("Unexpected road layer");
     auto links=count(100000);
@@ -34,7 +48,7 @@ inline RoadGraph load_worldmap_roads(const std::filesystem::path &game) {
         if(conditions>1)throw std::runtime_error("Unknown road condition format");skip(size_t(conditions)*33);c.conditional=conditions!=0;
         chains.push_back(std::move(c));
     }
-    RoadGraph g;std::unordered_map<std::uint32_t,size_t> ids;auto nodes=count(100000);
+    RoadGraph g;g.format_version=version;std::unordered_map<std::uint32_t,size_t> ids;auto nodes=count(100000);
     for(std::uint32_t i=0;i<nodes;++i){auto id=u();RoadPoint q{number(),number(),number()};number();u();auto n=count(10000);skip(size_t(n)*4);
         if(std::abs(q.x)>100000||std::abs(q.y)>100000||std::abs(q.z)>100000||!ids.emplace(id,g.points.size()).second)throw std::runtime_error("Invalid road node");
         g.points.push_back(q);

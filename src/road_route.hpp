@@ -1,5 +1,6 @@
 #pragma once
 // Geometric routing only. Archive traversal flags are not yet understood.
+#include <cstdint>
 #include <vector>
 #include <cmath>
 #include <limits>
@@ -9,7 +10,7 @@
 namespace crimson_nav {
 struct RoadPoint { double x{},y{},z{}; };
 struct RoadEdge { size_t a{},b{}; };
-struct RoadGraph { std::vector<RoadPoint> points; std::vector<RoadEdge> edges; };
+struct RoadGraph { std::vector<RoadPoint> points; std::vector<RoadEdge> edges; std::uint32_t format_version{}; };
 struct RoadRoute { bool valid{}; double length{}; std::vector<RoadPoint> points; };
 inline bool finite(RoadPoint p) {return std::isfinite(p.x)&&std::isfinite(p.y)&&std::isfinite(p.z);}
 inline double road_distance(RoadPoint a,RoadPoint b) {

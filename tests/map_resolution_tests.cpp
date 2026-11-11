@@ -21,7 +21,9 @@ struct Memory {
             if(layout_transition==4)put(0x3613b,std::uint8_t(0));
             if(layout_transition==5)return false;
         }
-        if(p==root+0xa58&&++canvas_reads==2){
+        // The search reads its window in bulk; the first 8-byte canvas read here
+        // is the verification re-read, so a change now is a torn snapshot.
+        if(p==root+0xa58&&n==8&&++canvas_reads==1){
             if(transition==1){float changed[2]={2560,1440};put(p,changed);}
             if(transition==2)put(root+0xa80,float(-999));
             if(transition==3)put(parent_address+0xb0,(unsigned char)0);

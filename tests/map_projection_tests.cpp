@@ -45,6 +45,21 @@ int main(){
  if(!crimson_nav::read_worldmap_projection(later,0,root).valid){
      std::cerr<<"FAIL: bounded additive full-map projection shift\n";return 1;
  }
+ // Patch 2.04 moved the block 0x60 further, beyond the 2.03 search window.
+ Memory patch204;patch204.put(root,std::uintptr_t(89508976));
+ patch204.put(root+8,body);patch204.put(body+0x38,parent);patch204.put(parent+0xb0,(unsigned char)0x40);
+ const float measured_anchor[5]={1088.413f,579.191f,-10496.508f,-2183.426f,10};
+ patch204.put(root+0xac8,shifted_canvas);patch204.put(root+0xae8,measured_anchor);
+ const auto at204=crimson_nav::read_worldmap_projection(patch204,0,root);
+ if(!at204.valid||at204.ax!=.1||at204.canvas_width!=1920){
+     std::cerr<<"FAIL: patch 2.04 full-map projection block at +0xac8\n";return 1;
+ }
+ Memory outside=patch204;outside.put(root+0xac8,no_canvas);
+ outside.put(root+crimson_nav::worldmap_projection_search_end+4,shifted_canvas);
+ outside.put(root+crimson_nav::worldmap_projection_search_end+0x24,measured_anchor);
+ if(crimson_nav::read_worldmap_projection(outside,0,root).valid){
+     std::cerr<<"FAIL: projection block outside the bounded window must be rejected\n";return 1;
+ }
  Memory ambiguous=shifted;ambiguous.put(root+0xab0,later_canvas);ambiguous.put(root+0xad0,later_anchor);
  if(crimson_nav::read_worldmap_projection(ambiguous,0,root).valid){
      std::cerr<<"FAIL: ambiguous full-map projection blocks must be rejected\n";return 1;

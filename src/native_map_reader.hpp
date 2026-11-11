@@ -44,8 +44,8 @@ inline Discovery discover_map(ProcessMemory &memory,std::uintptr_t base,const st
                         if(memory.read(pos+i+8,&body,8)&&memory.read(body+0x60,&ref,8)&&memory.read(ref,&text,8)&&memory.read(ref+8,&length,4)&&length==12&&memory.read(text,name,12)&&!std::memcmp(name,"WorldMapBody",12)){++result.world_candidates;result.world_root=pos+i;}
                     }
                     if(value!=base+build.minimap_root)continue;
-                    MapState state{};
-                    if(read_map(memory,base,pos+i,state,build)) {++result.candidates;result.root=pos+i;}
+                    MapState state{};const auto layout=select_minimap_layout(memory,base,pos+i,build);
+                    if(layout&&read_map(memory,base,pos+i,state,build,*layout)) {++result.candidates;result.root=pos+i;}
                 }
                 // Yield periodically; scanner never runs on the render thread.
                 if((result.bytes%(8*1024*1024))==0)Sleep(1);

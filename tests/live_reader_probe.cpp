@@ -81,11 +81,13 @@ int wmain(int argc,wchar_t **argv) {
     std::cout<<"Scan bytes="<<found.bytes<<" candidates="<<found.candidates<<" complete="<<found.complete<<" root=0x"<<std::hex<<found.root<<std::dec<<"\n";
     std::cout<<"World candidates="<<found.world_candidates<<" root=0x"<<std::hex<<found.world_root<<std::dec<<"\n";
     if(!found.root||!found.world_root)diagnose_identities(memory,base,*build);
-    crimson_nav::MapState state{};bool ok=found.root&&crimson_nav::read_map(memory,base,found.root,state,*build);
+    const auto *layout=found.root?crimson_nav::select_minimap_layout(memory,base,found.root,*build):nullptr;
+    if(layout)std::cout<<"Minimap layout="<<layout->name<<"\n";
+    crimson_nav::MapState state{};bool ok=layout&&crimson_nav::read_map(memory,base,found.root,state,*build,*layout);
     if(ok)std::cout<<"Player="<<state.xyz[0]<<","<<state.xyz[1]<<","<<state.xyz[2]<<" destination_candidate="<<state.destination_candidate<<" map_hidden_candidate="<<state.map_hidden_candidate<<" distance="<<state.distance<<"\n";
-    if(ok){const auto target=crimson_nav::read_target(memory,base,found.root,*build);
+    if(ok){const auto target=crimson_nav::read_target(memory,base,found.root,*build,*layout);
         std::cout<<"Collection target status="<<static_cast<int>(target.status)<<" xyz="<<target.xyz[0]<<","<<target.xyz[1]<<","<<target.xyz[2]<<"\n";}
-    if(ok){const auto g=crimson_nav::read_minimap_geometry(memory,base,found.root,*build);
+    if(ok){const auto g=crimson_nav::read_minimap_geometry(memory,base,found.root,*build,*layout);
         std::cout<<"Geometry valid="<<g.valid<<" canvas="<<g.canvas_width<<","<<g.canvas_height<<" rect="<<g.x<<","<<g.y<<","<<g.width<<","<<g.height<<"\n";}
     CloseHandle(process);return ok?0:5;
 }

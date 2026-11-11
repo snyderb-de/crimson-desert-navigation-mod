@@ -273,3 +273,24 @@ The user completed that gate and reported: minimap `ok`, full-screen map `good`,
 Final packaging passes. `Crimson-Navigation-1.0.7.zip` contains exactly the add-on, README, changelog, and complete third-party notices. Archive SHA256 is `E649C6B9C1614A56B8EF09160E9118E4E4103B24075B9BC66E2BADEC9FC13857`, size 236,930 bytes. CRC, allowlist, staged/archive identity, Windows x64 PE, required exports, dependency notices, no-personal-settings/game-assets, BBCode balance, unchanged older gallery, exact tested binary, and runtime evidence checks pass. No publication occurred.
 
 For GitHub source presentation, the user requests the existing approved header and gameplay images in the repository README. Track stable copies under `docs/images/`, keep the promotional header explicitly labeled as an AI-edited illustration based on an official Pearl Abyss screenshot, and label the gameplay captures as unchanged user-supplied 1.0.0 images rather than current patch-validation screenshots. Preserve source links and hashes in `docs/images/README.md`. Generated release binaries and ZIP files remain excluded from source control.
+
+
+## November 10, 2026 - patch 2.04 compatibility decisions
+
+The user wants fewer update blockers when a patch does not change map behavior. Decisions for 1.0.8:
+
+- Road format version is not an identity. Accept versions 46 through 255 when the consumed structure fully validates. Versions above the last measured version (47) run, but the status line reports the format as unverified. Read the file by its actual size (capped at 16 MiB), not a fixed byte count.
+- Minimap member offsets are grouped into named layout profiles. Select a profile only when the minimap canvas class identity is at exactly one profile's canvas member. Reject no match and ambiguous matches. Do not infer a profile from the game version. A new profile still needs live measurement; this removes the need to choose it by build, not the need to measure it.
+- Flag values are accepted only when measured. The 2.04 profile skips exactly `0x23A` for a non-destination presentation icon. Masks or value families are not accepted.
+- The UI element visibility offset belongs to the profile, because it changed in the same build as the minimap members. Profiles are a measured pair; mixing them is not supported.
+- The full-map block search window is a resource bound, not a version identity. It widens to root +0x900..+0xD00 with unique-match and re-read checks unchanged, and is read in one bulk read per frame.
+- Reader exceptions show their message in the status line so that the next break is easier to diagnose from a user screenshot.
+- DLC road files are not read. They are plain and readable, but contain only `tosidewalk` layers and no `worldmaproad` layer. Route coverage in new areas comes from the base road archive. Do not route the player along NPC work or sidewalk layers without a separate decision.
+- 4K and other resolutions were not retested on 2.04. The UI scale chain did not move, so earlier evidence is expected to carry over. This is an assumption and is recorded as such.
+
+### 1.0.8 release decisions
+
+- The route width setting is defined in 1080p pixels and scaled by the uniform display fit. Existing saved values are kept, so routes above 1080p draw thicker than in 1.0.7; the release notes say so.
+- Credits name every AI tool used. The Pearl Abyss attribution statement is quoted exactly.
+- Release archives use fixed entry timestamps so a rebuild from the same files reproduces the same hash.
+- Publication remains the user's action.

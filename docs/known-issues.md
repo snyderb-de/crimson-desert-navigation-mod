@@ -1,10 +1,24 @@
 # Navigation TODOs
 
-Current local build (September 12, 2026): 1.0.6-test1 is installed with automatic map class detection and no exact executable version/hash lock. Regression/native host checks and detection against the current executable pass; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check. [Build and deployment](../outputs/local-test-1.0.6/START-HERE.md).
+Current local build (November 10, 2026): 1.0.8-test3 is installed for game patch 2.04 and prepared as release 1.0.8. The user confirms routes on both maps at 1920x1080 and approved 3840x2160 with resolution-scaled route width; see TODO-005.
+
+Earlier local build (September 12, 2026): 1.0.6-test1 is installed with automatic map class detection and no exact executable version/hash lock. Regression/native host checks and detection against the current executable pass; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check. [Build and deployment](../outputs/local-test-1.0.6/START-HERE.md).
 
 Prior gameplay validation: 1.0.5-test1 introduced the full-map native UI scaling/centering correction. Four live data comparisons passed before deployment; the user now reports the 4096x2160 full-map test looks good after relaunch. [User validation](../outputs/local-test-1.0.5/User-test-results.md). Only our add-on changed; all 979 other files are hash-identical. [Scaling evidence](../outputs/local-test-1.0.5/Resolution-evidence.md), [deployment](../outputs/local-test-1.0.5/deployment-verification.json). Earlier 1.0.4 user validation covers both maps at 1440p and route persistence through vendors, enemies and NPC interactions. Minimap turn lag remains TODO-003.
 
 Release closeout: [1.0.6 upload bundle](../outputs/release-1.0.6/RELEASE-INDEX.md) supersedes the earlier 1.0.5 preparation; startup, automatic map discovery and routes on both maps are confirmed by the game log and the user's visual check. The description treats vendor/NPC fixes as complete for the tested interactions and retains temporary combat/other-interaction route hiding as a known issue with expected automatic recovery while the active destination remains set.
+
+## TODO-006: Dotted minimap dots vanish below 1080p at small widths
+
+Status: open, found by code audit before the 1.0.8 release; not reported in game. Route width scales by min(width/1920, height/1080), down to 0.5. Below 1080p, a Dotted-style width under about 1.5 (under 2 at 960x540 or smaller) gives a dot radius under 0.5, and ImGui draws nothing for that. Planned fix: a minimum dot radius of 0.5. Documented as a known issue in the 1.0.8 notes.
+
+## TODO-005: Game patch 2.04 compatibility
+
+Status: fixed in 1.0.8-test2 and confirmed in game on November 10, 2026 (Steam build 26480954 / executable 1.0.0.3576, Windows, 1920x1080). Version 1.0.7 showed no route on either map and ReShade reported `Reader stopped after an internal error.`
+
+Causes, all measured read-only: road archive format version 46 became 47; minimap root members moved by different amounts; the HUD rectangle moved to `MinimapDisplay`; the destination kind changed from 21 to 22, with a measured `0x23A` presentation icon in that category; UI element visibility flags moved from +0xB0 to +0xB8; and the full-map canvas/transform block moved to root +0xAC8. Version 1.0.8 accepts newer road versions on validated structure, selects minimap layout profiles by class identity, and widens the bounded full-map search. 1.0.8-test1 fixed the reader error but still read visibility at +0xB0 and drew nothing; test2 fixed that. The user confirms routes on both maps with test2, including full-map pan/zoom.
+
+Open checks: other resolutions and Linux/Proton on 2.04, and route behavior for destinations on DLC islands. DLC road files are readable but contain no world-map road layer; new areas use the base road archive, which gained 662 nodes. 15 DLC island groups have no world-map road nodes, so routes there are expected to end at the nearest road point. [Review](../outputs/Update-2.04-compatibility-review.md), [build](../outputs/local-test-1.0.8/START-HERE.md).
 
 ## TODO-004: Game patch 2.03.00 compatibility report
 

@@ -1,10 +1,12 @@
 # Crimson Desert navigation mod — project documentation
 
-Last updated: September 18, 2026.
+Last updated: November 10, 2026.
 
 Source-control scope: core project records, current release text and 1.0.6 user-validation notes are versioned. Generated packages, binaries, screenshots, research/dependency caches and raw evidence artifacts remain local; links to those artifacts require the development workspace.
 
-Current compatibility result: [game patch 2.03.00 review](Update-2.03.00-compatibility-review.md). The 1.0.6 archive failure and the patch's separate 16-byte full-map projection shift are confirmed locally on Steam build 25381195 / executable 1.0.0.2944. [Version 1.0.7-test2](local-test-1.0.7/START-HERE.md) adds bounded structural discovery for that moved projection block. Its complete regression build, untouched archive probe, 10/10 read-only live full-map/display projection samples, deployment checks, and installed gameplay validation pass. The user confirmed the minimap, full-screen map, full-map pan/zoom, and ReShade health.
+Current compatibility result: [game patch 2.04 review](Update-2.04-compatibility-review.md). Version 1.0.7 stops with a reader internal error on Steam build 26480954 / executable 1.0.0.3576. The road format version, minimap members, destination kind, UI visibility flag offset and full-map block position changed. [Version 1.0.8-test2](local-test-1.0.8/START-HERE.md) adds forward road-version acceptance, minimap layout profiles selected by class identity, and a wider bounded full-map search. The full regression suite, untouched archive probe, read-only live probe and deployment checks pass. The user confirms routes on both maps, including full-map pan/zoom. Other resolutions and DLC-only areas are not verified on 2.04. Test3 adds resolution-scaled route width and was approved by the user at 3840x2160. [Release 1.0.8](release-1.0.8/RELEASE-INDEX.md) is prepared for manual upload; ZIP SHA256 `D5275E9B5BD80733B75C6A84A63E29D3199E7535D044E34293B0A55AD63F4C91`. No Nexus upload or page edit was performed.
+
+Previous compatibility result: [game patch 2.03.00 review](Update-2.03.00-compatibility-review.md). The 1.0.6 archive failure and the patch's separate 16-byte full-map projection shift are confirmed locally on Steam build 25381195 / executable 1.0.0.2944. [Version 1.0.7-test2](local-test-1.0.7/START-HERE.md) adds bounded structural discovery for that moved projection block. Its complete regression build, untouched archive probe, 10/10 read-only live full-map/display projection samples, deployment checks, and installed gameplay validation pass. The user confirmed the minimap, full-screen map, full-map pan/zoom, and ReShade health.
 
 [Release 1.0.7](release-1.0.7/RELEASE-INDEX.md) is prepared for the user's manual upload. The final four-file ZIP is SHA256 `E649C6B9C1614A56B8EF09160E9118E4E4103B24075B9BC66E2BADEC9FC13857`; no Nexus upload or page edit was performed.
 

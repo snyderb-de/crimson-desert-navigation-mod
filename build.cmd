@@ -40,7 +40,7 @@ cl /nologo /std:c++17 /EHsc /MT /O2 /W4 /I src tests\map_resolution_tests.cpp /F
 if errorlevel 1 exit /b 1
 work\build\map_resolution_tests.exe
 if errorlevel 1 exit /b 1
-if not exist outputs\local-test-1.0.7\build mkdir outputs\local-test-1.0.7\build
+if not exist outputs\local-test-1.0.8\build mkdir outputs\local-test-1.0.8\build
 cl /nologo /std:c++17 /EHsc /MT /W4 /I src tests\settings_tests.cpp /Fo:work\build\settings_tests.obj /Fe:work\build\settings_tests.exe
 if errorlevel 1 exit /b 1
 work\build\settings_tests.exe
@@ -61,13 +61,13 @@ cl /nologo /std:c++17 /EHsc /MT /W4 /I src tests\reader_service_tests.cpp /Fo:wo
 if errorlevel 1 exit /b 1
 work\build\reader_service_tests.exe
 if errorlevel 1 exit /b 1
-for %%t in (map_acquisition_tests destination_session_tests reader_core_tests background_discovery_tests build_compatibility_tests game_layout_detection_tests) do (
+for %%t in (map_acquisition_tests destination_session_tests reader_core_tests background_discovery_tests build_compatibility_tests game_layout_detection_tests minimap_layout_tests route_scale_tests) do (
     cl /nologo /std:c++17 /EHsc /MT /W4 /I src tests\%%t.cpp /Fo:work\build\%%t.obj /Fe:work\build\%%t.exe
     if errorlevel 1 exit /b 1
     work\build\%%t.exe
     if errorlevel 1 exit /b 1
 )
-cl /nologo /std:c++17 /EHsc /MT /O2 /W4 /LD /I work\reference\reshade\include /I work\reference\reshade\deps\imgui src\addon.cpp /Fo:work\build\addon.obj /link /OUT:outputs\local-test-1.0.7\build\CrimsonNavigationLab.addon64 /IMPLIB:work\build\CrimsonNavigationLab.lib
+cl /nologo /std:c++17 /EHsc /MT /O2 /W4 /LD /I work\reference\reshade\include /I work\reference\reshade\deps\imgui src\addon.cpp /Fo:work\build\addon.obj /link /OUT:outputs\local-test-1.0.8\build\CrimsonNavigationLab.addon64 /IMPLIB:work\build\CrimsonNavigationLab.lib
 if errorlevel 1 exit /b 1
 cl /nologo /std:c++17 /EHsc /MT /W4 tests\host_probe.cpp /Fo:work\build\host_probe.obj /Fe:work\build\host_probe.exe /link /IMPLIB:work\build\host_probe.lib
 if errorlevel 1 exit /b 1

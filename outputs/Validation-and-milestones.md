@@ -452,3 +452,30 @@ Prepared Crimson-Navigation-1.0.7.zip from the exact in-game-tested test2 binary
 ### GitHub README and image preparation
 
 At the user's request, prepared the repository for a visual GitHub presentation before committing. Added tracked stable copies of the approved 1920x1080 promotional header and representative full-map, minimap pulse, and ReShade-menu captures under docs/images. Rewrote the main README around version 1.0.7 with the header, gameplay gallery, current compatibility explanation, installation, development, limitations, and licensing. The header is explicitly labeled as AI-edited promotional artwork based on an official Pearl Abyss screenshot; gameplay images are explicitly labeled as unchanged user-supplied 1.0.0 captures, not patch 2.03 validation images. Source URLs and exact hashes are recorded in docs/images/README.md.
+
+
+## November 10, 2026 - patch 2.04: 1.0.8-test2 passes in game
+
+Failure confirmed on Steam build 26480954 / executable 1.0.0.3576: 1.0.7 stops with `Reader stopped after an internal error.` RTTI detection passes; the road version, minimap members, destination kind, UI visibility flag offset and full-map block position changed.
+
+Passed:
+
+- Full regression suite with 1.0.8 code: 11 road archive, 27 minimap layout, 3,997 resolution, 15 compatibility, 39 automatic layout checks and all lifecycle, reader and projection suites.
+- Untouched 2.04 archive: 44,542 nodes, 47,248 segments, valid 192-point probe route.
+- Read-only live probe: layout 2.04 selected, active navigation destination found, route valid, 10/10 minimap display projections at 1920x1080. Full-map block unique over root +0x100..+0x1800; UI scale chain valid.
+- Deployment: test2 SHA256 `CA735B8DF98F7FBCAB79919F86AAA4339D2647F5A6C3F1168474A27EE13D7741` installed after verifying test1; backup kept; 979 other `bin64` files unchanged.
+- In game: the user confirms routes on the minimap and the full-screen map, including full-map pan and zoom. The log shows one candidate for each map, 20 full-map and 4 minimap submissions, and no internal error.
+
+Failed then fixed: 1.0.8-test1 drew no route because UI visibility flags moved to +0xB8.
+
+Not verified: other resolutions and Linux/Proton on 2.04, routing inside DLC-only areas, and road format versions above 47.
+
+Next milestone: a 1.0.8 release bundle only if the user asks. No Nexus upload or page edit.
+
+DLC data check (read-only): patch 2.04 index layout decoded and verified against both `0008` indexes. All DLC road files are plain and carry only `tosidewalk` layers. 15 DLC island groups have no world-map road nodes. Route behavior for destinations on those islands is not verified in game.
+
+Native 4K (3840x2160) with test2, user-reported: route position correct on both maps; route too thin. Test3 scales route width with display size (1.0 at 1080p, 2.0 at 4K). Built and unit-tested; installation and the 4K visual check are pending.
+
+### 1.0.8 release bundle
+
+Test3 at 3840x2160: the user approved the result; the log corroborates test3 at 3840 width with route submissions on both maps and no reader internal error. Release bundle verification passes (exact tested binary, CRC, allowlist, staging identity, x64 exports, no BCrypt import, notices, BBCode, unchanged gallery). ZIP SHA256 `D5275E9B5BD80733B75C6A84A63E29D3199E7535D044E34293B0A55AD63F4C91`. Milestone: ready for the user's manual upload. Not verified: other resolutions and aspect ratios, Linux/Proton, DLC island destinations.

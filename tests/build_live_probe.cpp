@@ -49,7 +49,7 @@ int wmain(int argc,wchar_t **argv){
             out<<",\"full_projection_valid\":"<<view.world_projection.valid<<",\"full_canvas\":["<<view.world_projection.canvas_width<<","<<view.world_projection.canvas_height
                 <<"],\"full_projection\":";p(view.world_projection);
             if(argc==7){
-                const auto screen=crimson_nav::read_route_display_projection(memory,base,mini,world,view.state,view.geometry,display_width,display_height,*build);
+                const auto screen=crimson_nav::read_route_display_projection(memory,base,mini,world,view.state,view.geometry,display_width,display_height,*build,*view.layout);
                 display_projections+=screen.valid;
                 out<<",\"display_size\":["<<display_width<<","<<display_height<<"],\"display_projection_valid\":"<<screen.valid<<",\"display_projection\":";p(screen);
             }

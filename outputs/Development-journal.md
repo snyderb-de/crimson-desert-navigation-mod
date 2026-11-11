@@ -566,3 +566,44 @@ Prepared Crimson-Navigation-1.0.7.zip from the exact in-game-tested test2 binary
 ### GitHub README and image preparation
 
 At the user's request, prepared the repository for a visual GitHub presentation before committing. Added tracked stable copies of the approved 1920x1080 promotional header and representative full-map, minimap pulse, and ReShade-menu captures under docs/images. Rewrote the main README around version 1.0.7 with the header, gameplay gallery, current compatibility explanation, installation, development, limitations, and licensing. The header is explicitly labeled as AI-edited promotional artwork based on an official Pearl Abyss screenshot; gameplay images are explicitly labeled as unchanged user-supplied 1.0.0 captures, not patch 2.03 validation images. Source URLs and exact hashes are recorded in docs/images/README.md.
+
+
+## November 10, 2026 - game patch 2.04 compatibility (1.0.8)
+
+The user reports that routes no longer appear after game patch 2.04 (Steam build 26480954, executable 1.0.0.3576, SHA256 `C94AD6C3EA54970A6D2DA7A2719753210A7728A91698ED3405DD9125470ED98F`). Installed 1.0.7 logged `Reader stopped after an internal error.` The automatic RTTI detector still resolves all four map classes at new RVAs, so the executable identity is not the cause.
+
+Read-only investigation found five separate changes. The road archive format version is 47 instead of 46, with the consumed `worldmaproad` layout unchanged. Minimap root members moved by different amounts (+0x10 to +0x40). The HUD rectangle is now carried by `MinimapDisplay`. The destination row tag and icon kind changed from 21 to 22, and one non-destination icon in that category carries flag value `0x23A`. The full-map canvas/transform block moved from root +0xA68 to +0xAC8, outside the 1.0.7 window.
+
+Implemented 1.0.8: a size-based road read with forward version acceptance on validated structure; minimap layout profiles selected by canvas class identity at exactly one profile offset; per-profile destination kind, HUD name and the exact measured presentation flag; a wider bounded full-map search (+0x900 to +0xD00) read in one bulk read; and exception text in the reader status. A review pass narrowed an over-broad flag mask to the single measured value, replaced per-candidate reads with one bulk read, and added an "unverified road format" status note for versions above 47.
+
+1.0.8-test1 (SHA256 `E8390D22ECFE15CDC6775C6C41F45FF0DEA378D3D09A4130FB7E63B4C3EB6071`) ran without the reader error and found the active navigation destination, but drew no route on either map. The user's screenshot showed `Minimap view signal: hidden candidate`. Live inspection found a sixth change: every generic UI element gained an 8-byte member, moving the visibility flags from +0xB0 to +0xB8 (0xD0 visible, 0x90 hidden). The profile now carries the UI flag offset, and the minimap, full-map and world-identity readers use it.
+
+1.0.8-test2 (SHA256 `CA735B8DF98F7FBCAB79919F86AAA4339D2647F5A6C3F1168474A27EE13D7741`) passes the full regression suite, the untouched archive probe (44,542 nodes, 47,248 segments) and a read-only live probe (layout 2.04, 10/10 minimap display projections). It was installed after the game closed, with the test1 file backed up; all 979 other `bin64` files are unchanged. The user confirms routes on both maps. The log shows 20 full-map and 4 minimap route submissions and no internal error. Also fixed a buffer overflow in the truncated road-archive test fixture. No release package or publication. [Review](Update-2.04-compatibility-review.md).
+
+DLC: the base road archive gained 662 nodes in new areas. `dlc/dlc_01` has its own road index, but its data is unreadable with current research tools and the mod does not read it. No user action is needed.
+
+The user then confirms full-map pan and zoom also work with test2.
+
+### DLC road data decoded
+
+The user chose to try reading the DLC road files. The patch 2.04 index layout is now decoded: trie names with varint back-distances, and file flags whose high byte indexes a new trailing extension table. The parse ends exactly at the file end and resolves every entry in both the base and DLC `0008` indexes. The earlier note that DLC road data looked compressed or encrypted was wrong; it came from the old index layout. All 167 DLC road files are plain. All 67 DLC `.road` files carry a single `tosidewalk` layer and no `worldmaproad` layer. Base `worldmaproad` nodes cover the new east area and three islands; 15 DLC island groups have no world-map road nodes in any file. Reading DLC files would not add player routes, so no runtime change is made. All reads were read-only; outputs are under `work/patch-2.04-evidence/`.
+
+### Native 4K check and 1.0.8-test3 route width scaling
+
+The user tested native 3840x2160 with test2. Routes are positioned correctly on both maps, but the route is very thin on both, because widths were fixed physical pixels. The game UI doubles at 4K (native full-map UI scale 2.0), so the route looked half as thick relative to the maps.
+
+Test3 treats the width setting and on-screen spacing (outline, pulse glow, connector dashes, minimap edge inset) as 1080p pixels. It scales them by `min(width/1920, height/1080)`, clamped to 0.5..4. At 1920x1080 the result is identical to test2. The saved width value is unchanged; the panel labels it "px at 1080p" and shows the current scale. New `route_scale_tests` (10 checks) and the full build pass. Test3 SHA256 `86C35B987D251CAFC805E6A5D121E22168A26258DFE047888302CBEB51B02B5A`. Not installed yet: the game is running.
+
+Test3 installed after the user closed the game: the installed file matched test2, which is backed up under `local-test-1.0.8/backup/`. Installed and candidate SHA256 match; all 979 other `bin64` files are unchanged (`deployment-verification-1.0.8-test3.json`). 4K visual check pending.
+
+### 1.0.8 release bundle prepared
+
+The user relaunched test3 at 3840x2160 (the ReShade log shows a 3840x2160 swap chain and test3 loading; the saved add-on log shows route submissions on both maps and no reader internal error) and then said the build is good to go. Prepared `release-1.0.8` from the exact installed test3 binary. `Crimson-Navigation-1.0.8.zip` contains only the add-on, README, changelog and third-party notices; SHA256 `D5275E9B5BD80733B75C6A84A63E29D3199E7535D044E34293B0A55AD63F4C91`, 240,274 bytes. Entry timestamps are fixed so the archive hash is reproducible. `work/release-1.0.8/build_release.py` assembles and verifies the bundle: exact tested binary, CRC, allowlist, staging identity, x64 PE, required exports, no BCrypt import, complete ReShade/ImGui notices, BBCode balance and seven unchanged gallery images.
+
+A fresh policy review found the Nexus file submission guidelines updated on November 4, 2026 with a new "AI Assisted" category; AI-Generated Content and AI Media remain the correct tags. The credits now name Anthropic Claude Code alongside OpenAI Codex. The README and description now use the exact attribution statement from the Pearl Abyss fan content guidelines. The GitHub README describes 1.0.8 and the patch 2.04 changes. No upload or Nexus page edit.
+
+### Release text audit
+
+An independent audit with adversarial verification (19 agents) confirmed seven issues, fixed before final packaging. The public text credited test2's 1080p and pan/zoom results to the test3 release binary; it now separates evidence by build. The DLC island route behavior is now marked as expected, not checked in game. The width note now says routes draw thinner below 1080p as well as thicker above it. Reset appearance is documented as restoring all settings, including automatic startup. The citation for the 3840x2160 session now points to a saved ReShade swap-chain excerpt. Minor wording: the AI disclosure says "most of the code", and the gallery is identified as 1.0.0 captures.
+
+One code regression was confirmed: below 1080p, the Dotted style with a width under about 1.5 produces a dot radius under ImGui's 0.5 minimum, so dots are not drawn. The tested binary is kept unchanged; the issue is documented in the release notes and tracked as TODO-006. Final ZIP SHA256 `D5275E9B5BD80733B75C6A84A63E29D3199E7535D044E34293B0A55AD63F4C91`, 240,274 bytes.

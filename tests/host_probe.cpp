@@ -18,7 +18,7 @@ extern "C" __declspec(dllexport) void ReShadeRegisterOverlay(const char *,void *
 extern "C" __declspec(dllexport) void ReShadeUnregisterOverlay(const char *,void *) {--panels;}
 extern "C" __declspec(dllexport) void ReShadeLogMessage(void *,int,const char *) {}
 int main() {
-    auto module=LoadLibraryW(L"outputs/local-test-1.0.7/build/CrimsonNavigationLab.addon64");
+    auto module=LoadLibraryW(L"outputs/local-test-1.0.8/build/CrimsonNavigationLab.addon64");
     if(!module){std::cerr<<"LoadLibrary error "<<GetLastError()<<'\n';return 1;}
     auto init=reinterpret_cast<bool(*)(HMODULE,HMODULE)>(GetProcAddress(module,"AddonInit"));
     auto uninit=reinterpret_cast<void(*)(HMODULE,HMODULE)>(GetProcAddress(module,"AddonUninit"));

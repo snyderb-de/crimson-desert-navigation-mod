@@ -1,0 +1,1 @@
+Road routes on the minimap and full map with custom color and width and solid, pulse, dashed or dotted minimap styles. Version 1.0.8 restores patch 2.04 compatibility and scales the route width with resolution.

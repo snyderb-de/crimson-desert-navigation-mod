@@ -33,7 +33,9 @@ public:
                 ReadRecovery recovery,world_recovery;
                 BackgroundDiscovery scan;
                 std::uint64_t next_scan{};
-                std::string acquisition="Initial discovery finished.";
+                const std::string road_note=roads.format_version>max_verified_road_version?
+                    " Road format "+std::to_string(roads.format_version)+" is unverified; structure validated.":"";
+                std::string acquisition="Initial discovery finished."+road_note;
                 while(!stopped.load()) {
                     const auto now=GetTickCount64();
                     Discovery result;
@@ -42,7 +44,7 @@ public:
                         acquisition="Scan complete="+std::to_string(result.complete)+
                             " mini candidates="+std::to_string(result.candidates)+
                             " full candidates="+std::to_string(result.world_candidates)+
-                            ". Previous addresses retained if no unique replacement.";
+                            ". Previous addresses retained if no unique replacement."+road_note;
                         next_scan=now+30000;
                         recovery.discovery_attempted(now);world_recovery.discovery_attempted(now);
                     }
@@ -50,12 +52,13 @@ public:
                     if(sample.valid)recovery.succeeded();else recovery.failed(now);
                     if(sample.world_missing)world_recovery.failed(now);else world_recovery.succeeded();
                     if(!scan.running()&&now>=next_scan&&(recovery.needs_discovery(now)||world_recovery.needs_discovery(now))){
-                        acquisition="Reacquiring map in background; validated sampling continues.";
+                        acquisition="Reacquiring map in background; validated sampling continues."+road_note;
                         scan.start([memory,base,build](const std::atomic<bool> &cancel) mutable {return discover_map(memory,base,cancel,*build);});
                     }
                     sample.acquisition=acquisition;publish(std::move(sample));
                     for(int i=0;i<3&&!stopped.load();++i)Sleep(10);
                 }
+            } catch(const std::exception &e) {publish(std::string("Reader stopped after an internal error: ")+e.what());
             } catch(...) {publish("Reader stopped after an internal error.");}
         });} catch(...) {publish("Could not start diagnostic worker.");}
     }
