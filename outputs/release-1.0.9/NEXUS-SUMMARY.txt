@@ -1,0 +1,1 @@
+Road routes on the minimap and full map with custom color and width and solid, pulse, dashed or dotted minimap styles. Version 1.0.9 keeps dotted minimap dots visible below 1080p; 1.0.8 restored patch 2.04 compatibility.

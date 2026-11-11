@@ -10,4 +10,11 @@ inline float route_pixel_scale(float width,float height){
     if(!std::isfinite(width)||!std::isfinite(height)||width<=0||height<=0)return 1.f;
     return std::clamp(std::min(width/1920.f,height/1080.f),.5f,4.f);
 }
+// Dotted-route dot radius for a scaled route width. ImGui's AddCircleFilled
+// draws nothing below a 0.5 px radius, so thin routes on small displays keep
+// a minimum visible dot instead of disappearing.
+inline float route_dot_radius(float scaled_width){
+    if(!std::isfinite(scaled_width))return .5f;
+    return std::max(scaled_width*.5f,.5f);
+}
 }

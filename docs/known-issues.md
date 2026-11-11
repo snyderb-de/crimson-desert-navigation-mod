@@ -10,7 +10,7 @@ Release closeout: [1.0.6 upload bundle](../outputs/release-1.0.6/RELEASE-INDEX.m
 
 ## TODO-006: Dotted minimap dots vanish below 1080p at small widths
 
-Status: open, found by code audit before the 1.0.8 release; not reported in game. Route width scales by min(width/1920, height/1080), down to 0.5. Below 1080p, a Dotted-style width under about 1.5 (under 2 at 960x540 or smaller) gives a dot radius under 0.5, and ImGui draws nothing for that. Planned fix: a minimum dot radius of 0.5. Documented as a known issue in the 1.0.8 notes.
+Status: fixed in code in 1.0.9-test1 and released as 1.0.9 (November 11, 2026); installed, not yet tested in game. Found by code audit before the 1.0.8 release; not reported in game. Route width scales by min(width/1920, height/1080), down to 0.5. Below 1080p, a Dotted-style width under about 1.5 (under 2 at 960x540 or smaller) gives a dot radius under 0.5, and ImGui draws nothing for that. Documented as a known issue in the 1.0.8 notes. Fix: `route_dot_radius` in `src/route_scale.hpp` keeps the dot radius at half the scaled width, with a 0.5 px minimum; the minimap edge test uses the same radius. Six new route scale checks cover the minimum, including width 1 at the smallest scale and the documented 960x540 case. [Build](../outputs/local-test-1.0.9/START-HERE.md).
 
 ## TODO-005: Game patch 2.04 compatibility
 

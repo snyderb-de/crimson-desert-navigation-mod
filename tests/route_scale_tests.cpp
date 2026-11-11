@@ -19,6 +19,14 @@ int main(){
     const float nan=std::numeric_limits<float>::quiet_NaN();
     check(near(route_pixel_scale(nan,1080),1.f)&&near(route_pixel_scale(0,0),1.f)&&near(route_pixel_scale(-1,1080),1.f),
         "invalid display sizes keep the authored width");
+    using crimson_nav::route_dot_radius;
+    check(near(route_dot_radius(6.f),3.f),"dot radius is half the route width");
+    check(near(route_dot_radius(1.f),.5f),"width 1 keeps the exact minimum radius");
+    check(near(route_dot_radius(1.f*route_pixel_scale(1280,720)),.5f),"width 1 at 720p keeps a visible dot");
+    check(near(route_dot_radius(1.f*route_pixel_scale(320,200)),.5f),"width 1 at the smallest scale keeps a visible dot");
+    check(near(route_dot_radius(0.f),.5f)&&near(route_dot_radius(-3.f),.5f)&&near(route_dot_radius(nan),.5f),
+        "invalid widths keep a visible dot");
+    check(route_dot_radius(1.5f*route_pixel_scale(960,540))>=.5f,"documented TODO-006 case reaches ImGui's 0.5 px minimum");
     std::cout<<checks<<" route scale checks, "<<failures<<" failures\n";
     return failures?1:0;
 }

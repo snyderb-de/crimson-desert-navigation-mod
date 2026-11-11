@@ -40,7 +40,7 @@ cl /nologo /std:c++17 /EHsc /MT /O2 /W4 /I src tests\map_resolution_tests.cpp /F
 if errorlevel 1 exit /b 1
 work\build\map_resolution_tests.exe
 if errorlevel 1 exit /b 1
-if not exist outputs\local-test-1.0.8\build mkdir outputs\local-test-1.0.8\build
+if not exist outputs\local-test-1.0.9\build mkdir outputs\local-test-1.0.9\build
 cl /nologo /std:c++17 /EHsc /MT /W4 /I src tests\settings_tests.cpp /Fo:work\build\settings_tests.obj /Fe:work\build\settings_tests.exe
 if errorlevel 1 exit /b 1
 work\build\settings_tests.exe
@@ -67,7 +67,7 @@ for %%t in (map_acquisition_tests destination_session_tests reader_core_tests ba
     work\build\%%t.exe
     if errorlevel 1 exit /b 1
 )
-cl /nologo /std:c++17 /EHsc /MT /O2 /W4 /LD /I work\reference\reshade\include /I work\reference\reshade\deps\imgui src\addon.cpp /Fo:work\build\addon.obj /link /OUT:outputs\local-test-1.0.8\build\CrimsonNavigationLab.addon64 /IMPLIB:work\build\CrimsonNavigationLab.lib
+cl /nologo /std:c++17 /EHsc /MT /O2 /W4 /LD /I work\reference\reshade\include /I work\reference\reshade\deps\imgui src\addon.cpp /Fo:work\build\addon.obj /link /OUT:outputs\local-test-1.0.9\build\CrimsonNavigationLab.addon64 /IMPLIB:work\build\CrimsonNavigationLab.lib
 if errorlevel 1 exit /b 1
 cl /nologo /std:c++17 /EHsc /MT /W4 tests\host_probe.cpp /Fo:work\build\host_probe.obj /Fe:work\build\host_probe.exe /link /IMPLIB:work\build\host_probe.lib
 if errorlevel 1 exit /b 1

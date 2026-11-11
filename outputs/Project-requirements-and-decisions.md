@@ -294,3 +294,8 @@ The user wants fewer update blockers when a patch does not change map behavior. 
 - Credits name every AI tool used. The Pearl Abyss attribution statement is quoted exactly.
 - Release archives use fixed entry timestamps so a rebuild from the same files reproduces the same hash.
 - Publication remains the user's action.
+
+## November 11, 2026 - 1.0.9 release decisions
+
+- Released 1.0.9 at the user's request before an in-game run. The only code change from the in-game-tested 1.0.8 binary is the Dotted dot radius minimum, which leaves output at 1920x1080 and above unchanged. All public text states that the change is not yet checked in game.
+- The development build output moved to `outputs/local-test-1.0.9/build/` so that new builds do not overwrite the earlier test folder's binary.

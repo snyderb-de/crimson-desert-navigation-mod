@@ -454,6 +454,14 @@ Prepared Crimson-Navigation-1.0.7.zip from the exact in-game-tested test2 binary
 At the user's request, prepared the repository for a visual GitHub presentation before committing. Added tracked stable copies of the approved 1920x1080 promotional header and representative full-map, minimap pulse, and ReShade-menu captures under docs/images. Rewrote the main README around version 1.0.7 with the header, gameplay gallery, current compatibility explanation, installation, development, limitations, and licensing. The header is explicitly labeled as AI-edited promotional artwork based on an official Pearl Abyss screenshot; gameplay images are explicitly labeled as unchanged user-supplied 1.0.0 captures, not patch 2.03 validation images. Source URLs and exact hashes are recorded in docs/images/README.md.
 
 
+## November 11, 2026 - 1.0.9-test1 minimum dotted radius (TODO-006)
+
+- Verified offline: 16 route scale checks, including a 0.5 px minimum dot radius for width 1 at 720p and at the smallest 0.5 scale; full regression suite and native host check pass.
+- Verified by source reading: bundled ImGui `AddCircleFilled` draws nothing below a 0.5 px radius.
+- Untested: Dotted style below 1080p in game. Candidate `C86EC6A8DADAEF8E7474EEC759C33F918A81C7104C237C8EC084316D66A20B4E` is installed (979 other `bin64` files unchanged) and released as 1.0.9.
+- Release bundle: ZIP SHA256 `CFC47E6903326FDF43D747499FB3654418B70E086E9C15F58AC6A591B5F65492`; ZIP CRC, allowlist, x64 PE, exports, no BCrypt import, notices and BBCode balance pass.
+- Next milestone: an in-game Dotted-style check below 1080p, with width 1.0.
+
 ## November 10, 2026 - patch 2.04: 1.0.8-test2 passes in game
 
 Failure confirmed on Steam build 26480954 / executable 1.0.0.3576: 1.0.7 stops with `Reader stopped after an internal error.` RTTI detection passes; the road version, minimap members, destination kind, UI visibility flag offset and full-map block position changed.

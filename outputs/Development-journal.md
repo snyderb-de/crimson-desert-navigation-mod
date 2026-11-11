@@ -607,3 +607,15 @@ A fresh policy review found the Nexus file submission guidelines updated on Nove
 An independent audit with adversarial verification (19 agents) confirmed seven issues, fixed before final packaging. The public text credited test2's 1080p and pan/zoom results to the test3 release binary; it now separates evidence by build. The DLC island route behavior is now marked as expected, not checked in game. The width note now says routes draw thinner below 1080p as well as thicker above it. Reset appearance is documented as restoring all settings, including automatic startup. The citation for the 3840x2160 session now points to a saved ReShade swap-chain excerpt. Minor wording: the AI disclosure says "most of the code", and the gallery is identified as 1.0.0 captures.
 
 One code regression was confirmed: below 1080p, the Dotted style with a width under about 1.5 produces a dot radius under ImGui's 0.5 minimum, so dots are not drawn. The tested binary is kept unchanged; the issue is documented in the release notes and tracked as TODO-006. Final ZIP SHA256 `D5275E9B5BD80733B75C6A84A63E29D3199E7535D044E34293B0A55AD63F4C91`, 240,274 bytes.
+
+## November 11, 2026 - 1.0.9-test1 minimum dotted radius (TODO-006)
+
+After the 1.0.8 GitHub release (tag `v1.0.8`), added `route_dot_radius`: half the resolution-scaled route width, never under 0.5 px. ImGui's `AddCircleFilled` returns without drawing below a 0.5 px radius (checked in the bundled ImGui source), so Dotted-style dots previously vanished when width x scale was under 1. The minimap edge test now uses the same radius as the drawn dot. Dots are unchanged whenever the old radius was 0.5 px or more, which includes every width at 1920x1080 and above. Route scale tests grew from 10 to 16 checks; the full suite and native host check pass.
+
+The build output moved from `local-test-1.0.8/build` to `local-test-1.0.9/build`. The first 1.0.9 build briefly overwrote the 1.0.8 build-folder copy; it was restored byte-identical from the release ZIP (SHA256 `86C35B98...2B5A`). Candidate SHA256 `C86EC6A8DADAEF8E7474EEC759C33F918A81C7104C237C8EC084316D66A20B4E`. Not installed and not tested in game.
+
+### 1.0.9 installed and released
+
+The user asked to install, package, commit, push and release 1.0.9 without an in-game run first. Installed 1.0.9-test1 after confirming the game was closed: the installed add-on matched the 1.0.8 release binary, which is backed up under `local-test-1.0.9/backup/`. All 979 other `bin64` files are unchanged (`deployment-verification-1.0.9-test1.json`).
+
+Prepared `release-1.0.9` with a builder derived from the 1.0.8 one. It packages the exact installed binary, keeps the 1.0.8 notices and gallery unchanged, and repeats the ZIP, PE, export, import and notice checks. ZIP SHA256 `CFC47E6903326FDF43D747499FB3654418B70E086E9C15F58AC6A591B5F65492`. The Nexus guidelines (November 4, 2026) and terms (May 12, 2026) were re-checked and are unchanged since the 1.0.8 review. The public text says the 1.0.9 change is not yet checked in game. Nothing was uploaded to Nexus.

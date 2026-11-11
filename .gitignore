@@ -35,6 +35,15 @@ outputs/release-1.0.8/package/*
 !outputs/release-1.0.8/package/README.txt
 !outputs/release-1.0.8/package/CHANGELOG.md
 !outputs/release-1.0.8/package/THIRD-PARTY-NOTICES.txt
+!outputs/release-1.0.9/
+outputs/release-1.0.9/*
+!outputs/release-1.0.9/*.md
+!outputs/release-1.0.9/*.txt
+!outputs/release-1.0.9/package/
+outputs/release-1.0.9/package/*
+!outputs/release-1.0.9/package/README.txt
+!outputs/release-1.0.9/package/CHANGELOG.md
+!outputs/release-1.0.9/package/THIRD-PARTY-NOTICES.txt
 !outputs/local-test-1.0.6/
 outputs/local-test-1.0.6/*
 !outputs/local-test-1.0.6/START-HERE.md
@@ -46,6 +55,9 @@ outputs/local-test-1.0.7/*
 !outputs/local-test-1.0.8/
 outputs/local-test-1.0.8/*
 !outputs/local-test-1.0.8/START-HERE.md
+!outputs/local-test-1.0.9/
+outputs/local-test-1.0.9/*
+!outputs/local-test-1.0.9/START-HERE.md
 *.obj
 *.pdb
 *.exe

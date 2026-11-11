@@ -6,10 +6,10 @@
 
 Road navigation for **Crimson Desert** through a native ReShade add-on. Set an active navigation destination and the mod draws a road-following route on the minimap and full-screen map, with custom color, width, and minimap styles.
 
-**Current version:** 1.0.8 (`1.0.8-test3` internally)<br>
+**Current version:** 1.0.9 (`1.0.9-test1` internally)<br>
 **Runtime requirement:** Windows x64 and [ReShade](https://reshade.me/) with full add-on support<br>
 **Download:** [Nexus Mods](https://www.nexusmods.com/crimsondesert/mods/3447)<br>
-**Release record:** [1.0.8 notes and verification](outputs/release-1.0.8/RELEASE-INDEX.md)
+**Release record:** [1.0.9 notes and verification](outputs/release-1.0.9/RELEASE-INDEX.md)
 
 > The header is an AI-edited promotional illustration based on an official Pearl Abyss screenshot. The highlighted world-space line illustrates the concept; the actual add-on draws routes on the game maps.
 
@@ -46,6 +46,7 @@ Game patch 2.04 (Steam build 26480954 / executable 1.0.0.3576) broke version 1.0
 - Minimap member layouts are measured profiles. A profile is used only when the minimap canvas class identity sits at exactly one profile's canvas member; no match or an ambiguous match is rejected.
 - The full-map reader searches a wider bounded window for exactly one plausible canvas/transform block, then re-reads it and the object identity before drawing.
 - Route width and on-screen spacing scale with display resolution, so 4K routes keep their 1080p proportions.
+- Version 1.0.9 keeps Dotted-style minimap dots at a 0.5 px minimum radius, so they no longer disappear below 1080p at small widths. That change is not yet checked in game.
 
 The complete regression suite, untouched patch 2.04 archive probe, read-only live probes, deployment checks, and installed gameplay pass. The user confirmed routes on both maps and full-map pan/zoom at 1920x1080 and approved the 3840x2160 result. Details are in the [patch 2.04 compatibility review](outputs/Update-2.04-compatibility-review.md). The earlier [patch 2.03 review](outputs/Update-2.03.00-compatibility-review.md) covers version 1.0.7.
 
@@ -72,7 +73,7 @@ Source is under [`src/`](src/) and regression tests and read-only research probe
 cmd /c build.cmd
 ```
 
-The command runs the regression and native-host checks and writes the development add-on under `outputs/local-test-1.0.8/build/`. The verified 1.0.8 release archive is recorded under [`outputs/release-1.0.8/`](outputs/release-1.0.8/RELEASE-INDEX.md); generated binaries and ZIP files remain local and are excluded from source control.
+The command runs the regression and native-host checks and writes the development add-on under `outputs/local-test-1.0.9/build/`. The verified 1.0.9 release archive is recorded under [`outputs/release-1.0.9/`](outputs/release-1.0.9/RELEASE-INDEX.md); generated binaries and ZIP files remain local and are excluded from source control.
 
 ## Known limitations and reports
 

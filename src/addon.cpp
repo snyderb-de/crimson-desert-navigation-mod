@@ -35,7 +35,7 @@ void save_settings() noexcept {
 }
 void settings_panel(reshade::api::effect_runtime *) {
     std::lock_guard<std::mutex> lock(state_mutex);
-    ImGui::TextUnformatted("Crimson Navigation 1.0.8-test3");
+    ImGui::TextUnformatted("Crimson Navigation 1.0.9-test1");
     ImGui::TextWrapped("Experimental road navigation on both maps. Off-road destinations end at the nearest road point. Conditional road transitions are excluded.");
     ImGui::Checkbox("Start navigation automatically",&settings.auto_start);
     if(ImGui::Button("Start / restart navigation")){startup_pending=false;reader.start();}
@@ -155,13 +155,14 @@ void draw_route(reshade::api::effect_runtime *) {
             }
         }else if(!full&&settings.minimap_style>=2){
             const bool dotted=settings.minimap_style==3;
+            const float dot_radius=crimson_nav::route_dot_radius(width);
             crimson_nav::route_pattern(segment_start+segment_length*clip_start,segment_start+segment_length*clip_end,dotted,
                 [&](double lo,double hi){
                     ImVec2 x(float(a.x+(b.x-a.x)*lo),float(a.y+(b.y-a.y)*lo));
                     ImVec2 y(float(a.x+(b.x-a.x)*hi),float(a.y+(b.y-a.y)*hi));
                     if(dotted){
-                        if(std::hypot(x.x-circle.x,x.y-circle.y)+width*.5f<=circle.radius-inset)
-                            draw->AddCircleFilled(x,width*.5f,color);
+                        if(std::hypot(x.x-circle.x,x.y-circle.y)+dot_radius<=circle.radius-inset)
+                            draw->AddCircleFilled(x,dot_radius,color);
                     }else draw->AddLine(x,y,color,width);
                 });
         }else if(!full&&settings.minimap_style==1){
@@ -184,7 +185,7 @@ void draw_route(reshade::api::effect_runtime *) {
 
 }
 extern "C" __declspec(dllexport) const char *NAME="Crimson Navigation Lab";
-extern "C" __declspec(dllexport) const char *DESCRIPTION="Road navigation 1.0.8-test3. Patch 2.04 road format, minimap layout and full-map projection compatibility; automatic layout detection; route width scales with display resolution.";
+extern "C" __declspec(dllexport) const char *DESCRIPTION="Road navigation 1.0.9-test1. Patch 2.04 road format, minimap layout and full-map projection compatibility; automatic layout detection; route width scales with display resolution; dotted minimap dots keep a 0.5 px minimum radius.";
 extern "C" __declspec(dllexport) bool AddonInit(HMODULE module,HMODULE host) {
     try {
         wchar_t filename[32768]; const DWORD count=GetModuleFileNameW(module,filename,32768);
@@ -199,7 +200,7 @@ extern "C" __declspec(dllexport) bool AddonInit(HMODULE module,HMODULE host) {
     startup_pending=true;
     reshade::register_overlay(nullptr,settings_panel);
     reshade::register_event<reshade::addon_event::reshade_overlay>(draw_route);
-    reshade::log::message(reshade::log::level::info,"Crimson Navigation Lab 1.0.8-test3 loaded: patch 2.04 road format, minimap layout and full-map projection compatibility; automatic layout detection; route width scales with display resolution.");
+    reshade::log::message(reshade::log::level::info,"Crimson Navigation Lab 1.0.9-test1 loaded: patch 2.04 road format, minimap layout and full-map projection compatibility; automatic layout detection; route width scales with display resolution; dotted minimap dots keep a 0.5 px minimum radius.");
     return true;
 }
 extern "C" __declspec(dllexport) void AddonUninit(HMODULE module,HMODULE) {

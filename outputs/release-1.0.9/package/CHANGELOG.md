@@ -1,0 +1,18 @@
+# Crimson Navigation 1.0.9 - November 11, 2026
+
+- Dotted-style minimap dots keep a minimum 0.5 px radius. Below 1920x1080, a route width under about 1.5 previously made the dots too small for ReShade's overlay to draw, so no dots appeared. Dots are unchanged at 1920x1080 and above.
+
+Known issues: other resolutions/display layouts may still need fixes. Many DLC islands have no world-map roads, so routes there are expected to end at the nearest road point (not yet checked in game). Combat and other interactions can temporarily hide the route; it should return while the active navigation destination remains set. Report cases that do not recover. Minimap drift/turn lag is still being tightened.
+
+Upcoming, not included: routing to user-placed map markers, pulse animation speed, pulse blur and route glow controls.
+
+Internal version: 1.0.9-test1. Built on the in-game-tested 1.0.8 release. The only code change is the minimum radius of Dotted-style minimap dots; it changes nothing at 1920x1080 and above. Full regression and native host checks pass. The build is installed, but the Dotted style below 1080p has not been checked in game yet. Existing appearance settings are preserved.
+
+# Crimson Navigation 1.0.8 - November 10, 2026
+
+- Fixed the game patch 2.04 failure where no route appeared and the panel showed "Reader stopped after an internal error."
+- The road loader reads the road file by its actual size and accepts newer road format versions when every structural check passes. A format newer than the last tested one is reported as unverified in the panel.
+- Automatic detection of the changed minimap object layout in patch 2.04, including the new destination icon type and the moved map visibility flags.
+- The full-map projection search covers a wider bounded window after patch 2.04 moved that data again.
+- Route width, outline, pulse glow and player-to-road connector dashes scale with display resolution: unchanged at 1920x1080, 2x at 3840x2160.
+- Reader errors show their reason in the panel.
